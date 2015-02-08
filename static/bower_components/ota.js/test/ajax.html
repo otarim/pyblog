@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	/*body {background: red;}*/
+	</style>
+</head>
+<body>
+	<input type="file" name="image" id="xx" multiple>
+	<a href="" data-mod="dom">dom</a>
+	<a href="" data-mod="touch,pjax">touch</a>
+	<a href="" data-mod="core">core</a>
+</body>
+<script src="../src/loader.js"></script>
+<script>
+	otaLoader({
+		alias: {
+			'touch': '../src/components/touch.js',
+			'pjax': '../src/components/pjax.js'
+		},
+	})
+	require('core',function(ota){
+		var upload = ota.fileUpload,
+			ajax = ota.ajax
+			$ = ota.get
+		$('#xx').on('change',function(){
+			var filenames = [].map.call(this.files,function(file){
+				return file.name
+			})
+			upload({
+				url: 'http://309.im/Home/media-up',
+				// url: 'http://192.168.17.150:5600?req=gbk',
+				data: {
+					image: this.files,
+					description: filenames
+				},
+				success:  function(value,xhr){
+					console.log(xhr.getResponseHeader('Content-Type'))
+					console.log(value)
+				},
+				error: function(e,xhr){
+					console.log(e,xhr)
+				},
+				progress: function(loaded,total){
+					console.log(loaded,total)
+				},
+				crossdomain: true,
+				// traditional: true
+			})
+
+		})
+		// ajax({
+		// 	url: 'http://192.168.17.150:5600?req=gbk',
+		// 	type: 'get',
+		// 	data: {
+		// 		a: [1,2,3],
+		// 		b: '我靠&22'
+		// 	},
+		// 	success: function(d){
+		// 		alert(d)
+		// 	},
+		// 	// crossdomain: true,
+		// 	// traditional: true
+		// })
+		// ajax({
+		// 	url: 'http://www.otarim.com/api/get_posts/',
+		// 	data: {
+		// 		a: [1,2,3],
+		// 		b: '我靠&22'
+		// 	},
+		// 	dataType: 'jsonp',
+		// 	success: function(d){
+		// 		console.log(d)
+		// 	},
+		// 	fresh: false
+		// 	// crossdomain: true,
+		// 	// traditional: true
+		// })
+		ajax({
+			url: 'http://127.0.0.1:9527/search',
+			type: 'post',
+			dataType: 'json',
+			data: {
+				s: 'lisa',
+				type: 100
+			},
+			useFormData: false,
+			success: function(d){
+				// ajax({
+				// 	url: 'http://127.0.0.1:9527/artist?artist=' + d.result.artists[0].id,
+				// 	success: function(d){
+				// 		console.log(d.artist)
+				// 	}
+				// })
+				ajax({
+					url: 'http://127.0.0.1:9527/search',
+					type: 'post',
+					dataType: 'json',
+					data: {
+						s: 'lisa',
+						type: 100
+					},
+					useFormData: false,
+				})
+			}
+		})
+		// $(window).on('popstate',function(){
+		// 	if(history.state){
+		// 		if(history.state.mod){
+		// 			require(history.state.mod,function(mod){
+		// 				console.log(mod)
+		// 			})
+		// 		}
+		// 	}
+		// })
+		// $('body').on('click','a[data-mod]',function(){
+		// 	var modName = $(this).data('mod').split(',')
+		// 	window.history.pushState({
+		// 		mod: modName
+		// 	},modName,'./'+modName)
+		// 	require(modName,function(mod){
+		// 		console.log(mod)
+		// 	})
+		// 	return false
+		// })
+	})
+require('core',function(ota){
+		var upload = ota.fileUpload,
+			ajax = ota.ajax
+			$ = ota.get
+		$('#xx').on('change',function(){
+			var filenames = [].map.call(this.files,function(file){
+				return file.name
+			})
+			upload({
+				url: 'http://309.im/Home/media-up',
+				// url: 'http://192.168.17.150:5600?req=gbk',
+				data: {
+					image: this.files,
+					description: filenames
+				},
+				success:  function(value,xhr){
+					console.log(xhr.getResponseHeader('Content-Type'))
+					console.log(value)
+				},
+				error: function(e,xhr){
+					console.log(e,xhr)
+				},
+				progress: function(loaded,total){
+					console.log(loaded,total)
+				},
+				crossdomain: true,
+				// traditional: true
+			})
+
+		})
+		// ajax({
+		// 	url: 'http://192.168.17.150:5600?req=gbk',
+		// 	type: 'get',
+		// 	data: {
+		// 		a: [1,2,3],
+		// 		b: '我靠&22'
+		// 	},
+		// 	success: function(d){
+		// 		alert(d)
+		// 	},
+		// 	// crossdomain: true,
+		// 	// traditional: true
+		// })
+		// ajax({
+		// 	url: 'http://www.otarim.com/api/get_posts/',
+		// 	data: {
+		// 		a: [1,2,3],
+		// 		b: '我靠&22'
+		// 	},
+		// 	dataType: 'jsonp',
+		// 	success: function(d){
+		// 		console.log(d)
+		// 	},
+		// 	fresh: false
+		// 	// crossdomain: true,
+		// 	// traditional: true
+		// })
+		// ajax({
+		// 	url: 'http://127.0.0.1:9527/search',
+		// 	type: 'post',
+		// 	dataType: 'json',
+		// 	data: {
+		// 		s: 'lisa',
+		// 		type: 100
+		// 	},
+		// 	useFormData: false,
+		// 	success: function(d){
+		// 		// ajax({
+		// 		// 	url: 'http://127.0.0.1:9527/artist?artist=' + d.result.artists[0].id,
+		// 		// 	success: function(d){
+		// 		// 		console.log(d.artist)
+		// 		// 	}
+		// 		// })
+		// 		ajax({
+		// 			url: 'http://127.0.0.1:9527/search',
+		// 			type: 'post',
+		// 			dataType: 'json',
+		// 			data: {
+		// 				s: 'lisa',
+		// 				type: 100
+		// 			},
+		// 			useFormData: false,
+		// 		})
+		// 	}
+		// })
+		
+		$(window).on('popstate',function(){
+			if(history.state){
+				if(history.state.mod){
+					require(history.state.mod,function(mod){
+						console.log(mod)
+					})
+				}
+			}
+		})
+		$('body').on('click','a[data-mod]',function(){
+			var modName = $(this).data('mod').split(',')
+			window.history.pushState({
+				mod: modName
+			},modName,'./'+modName)
+			require(modName,function(mod){
+				console.log(mod)
+			})
+			return false
+		})
+	})
+require(['animate','dom'],function(ani,dom){
+			console.log(dom)
+		})
+</script>
+</html>

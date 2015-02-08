@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<input type="text" name="" id="xx">
+	<div id="oo">xx</div>
+</body>
+<script src="../../js/jquery/jquery-2.1.1.js"></script>
+<script>
+	// var xx = document.getElementById('xx'),
+	// 	ooWatcher= {
+	// 		el: document.getElementById('oo'),
+	// 		value: ''
+	// 	}
+	// oo.addEventListener('DOMAttrModified',function(e){
+	// 	xx.value = this.getAttribute('callProp')
+	// },false)
+	// xx.addEventListener('input',function(){
+	// 	ooWatcher.value = this.value
+	// })
+	// Object.observe(ooWatcher,function(obj){
+	// 	obj.forEach(function(el){
+	// 		console.log(el)
+	// 	})
+	// 	// console.log(obj)
+	// 	// console.log(ooWatcher.el)
+	// 	// obj[0].object.el.textContent = xx.value = obj[0].object.value
+	// 	// console.log(obj.object)
+	// })
+</script>
+<script>
+	// dispatchEvent
+	var trigger = function(elem,type){
+		if(elem.dispatchEvent){
+			var event = document.createEvent('HTMLEvents')
+			// document.createEventObject
+			event.initEvent(type,true,true)
+			elem.dispatchEvent(event)
+			// elem.fireEvent('on'+type,event)
+		}
+	}
+	var xx = document.getElementById('xx')
+	xx.addEventListener('click',function(e){
+		console.log(e.isTrusted)
+		alert('xxx')
+	})
+	xx.onclick = function(){
+		alert(2)
+	}
+	trigger(xx,'click')
+	// xx.click()
+	// $(xx).trigger('click')
+</script>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="../animate.css">
+	<style>
+	div ,p {background: red;width: 100px;}
+	.aa {-webkit-animation: op linear 1s}
+	/*div {height: 100px;background: url(https://avatars2.githubusercontent.com/u/2024477?v=3&s=460);}*/
+	@-webkit-keyframes op {
+		0% { opacity: 1; width: 200px }
+		20% {  opacity: 0;}
+		100% {  opacity: 1; width: 400px }
+	}
+	@-o-keyframes op {
+		0% { opacity: 1; width: 200px }
+		20% {  opacity: 0;}
+		100% {  opacity: 1; width: 400px }
+	}
+	@-moz-keyframes op {
+		0% { opacity: 1; width: 200px }
+		20% {  opacity: 0;}
+		100% {  opacity: 1; width: 400px }
+	}
+	@keyframes op {
+		0% { opacity: 1; width: 200px }
+		20% {  opacity: 0;}
+		100% {  opacity: 1; width: 400px }
+	}
+	.stylie {
+	  -moz-animation-name: stylie-keyframes;
+	  -moz-animation-duration: 2000ms;
+	  -moz-animation-delay: 0ms;
+	  -moz-animation-fill-mode: forwards;
+	  -moz-animation-timing-function: linear;
+	  -moz-animation-iteration-count: infinite;
+	  -moz-transform-origin: 0 0;
+	  -webkit-animation-name: stylie-keyframes;
+	  -webkit-animation-duration: 2000ms;
+	  -webkit-animation-delay: 0ms;
+	  -webkit-animation-fill-mode: forwards;
+	  -webkit-animation-timing-function: linear;
+	  -webkit-animation-iteration-count: infinite;
+	  -webkit-transform-origin: 0 0;
+	  animation-name: stylie-keyframes;
+	  animation-duration: 2000ms;
+	  animation-delay: 0ms;
+	  animation-fill-mode: forwards;
+	  animation-timing-function: linear;
+	  animation-iteration-count: infinite;
+	  transform-origin: 0 0;
+	}
+	@-moz-keyframes stylie-keyframes {
+	  0% {-moz-transform:translate(px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  50% {-moz-transform:translate(327.5px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  100% {-moz-transform:translate(655px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	}
+	@-webkit-keyframes stylie-keyframes {
+	  0% {-webkit-transform:translate(px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  50% {-webkit-transform:translate(327.5px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  100% {-webkit-transform:translate(655px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	}
+	@keyframes stylie-keyframes {
+	  0% {transform:translate(px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  50% {transform:translate(327.5px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	  100% {transform:translate(655px, 0px) scale(1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate(-50%, -50%);}
+	}
+	@-webkit-keyframes filterTest {
+		from { -webkit-filter: blur(0px); }
+		to { -webkit-filter: blur(100px); }
+	}
+	</style>
+</head>
+<body>
+	<div>1</div>
+	<p id="jj">2</p>
+	<a href="" id="run">run</a>
+	<div>1</div>
+</body>
+<script src="../src/loader.js"></script>
+<!-- <script src="http://zeptojs.com/zepto.js"></script> -->
+<!--  Refused to execute script from 'https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js' because its MIME type ('text/plain') is not executable, and strict MIME type checking is enabled. -->
+<!-- <script src="https://raw.githubusercontent.com/madrobby/zepto/master/src/fx.js"></script> -->
+
+<script>
+	require(['dom','animate','style'],function(dom){
+		var $ = dom.get
+		$('div').animate('filterTest',{
+				duration: 2000,
+		},function(){
+			$(this).animate({width: '200px'},{duration: 2000,delay: 1000},function(){console.log('xxx')})
+		})
+			$('div').one('click',function(){
+				alert('xxx')
+			})
+		// var fire
+		// $('div').addClass('aa')
+		// $('div').on('webkitAnimationEnd',function(){
+		// 	fire = true
+		// 	console.log('xx')
+		// })
+		// setTimeout(function(){
+		// 	if(fire) return
+		// 	alert('xx')
+		// },1024)
+	})
+	// window.onload = function(){
+	// 	$('div').animate({width: '200px'},1000,function(el){
+	// 			$(this).animate({width: '100px'},100)
+	// 		})
+	// }
+</script>
+</html>

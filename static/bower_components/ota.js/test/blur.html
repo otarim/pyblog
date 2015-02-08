@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="1.css">
+	<style>
+	body {width: 100%;height: 100%}
+	.blur {width: 50%;height: 50%;position: absolute;top: 50%;left: 50%;-webkit-transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	-o-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);text-align: center;overflow: hidden;clip: }
+	.avator {display: inline-block;width: 100px;height: 100px;vertical-align: middle;border-radius: 100px;border: 5px solid rgba(255,255,255,.8);}
+	.detail {line-height: 1.5;display: inline-block;vertical-align: middle;text-align: left;color: #fff;margin: 0 1rem;height: 100px;}
+	.detail h5 {font-size: 1.5rem;}
+	.detail h5 a {color: #08c;}
+	.detail p {font-size: .8rem;}
+	.blur::before {content: '';line-height: 100%;height: 100%;width: 0;vertical-align: middle;display: inline-block;}
+	.blurBg {background: url(https://avatars2.githubusercontent.com/u/2024477?v=3&s=1000) no-repeat center center;position: absolute;width: 100%;height: 100%;z-index: -2;top: 0;left: 0;-webkit-filter: blur(35px);
+	-o-filter: blur(35px);
+	filter: blur(35px);}
+	.blur::after {background: rgba(0,0,0,.5);content: '';position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: -1}
+	</style>
+</head>
+<body>
+	<div class="blur">
+		<img src="https://avatars2.githubusercontent.com/u/2024477?v=3&s=100" alt="" class="avator">
+		<div class="detail">
+			<h5><a href="">otarim</a></h5>
+			<p>> Browse interesting projects, solving all types of interesting problems.</p>
+		</div>
+		<div class="blurBg"></div>
+	</div>
+</body>
+</html>

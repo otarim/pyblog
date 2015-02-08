@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="test/1.css">
+	<link rel="stylesheet" href="animate.css">
+</head>
+<body>
+	<p>asdadadad</p>
+	<div class="aa">
+		<a href="">a<b>xxxxx</b></a>
+	</div>
+	<div id="bb">hhhh</div>
+	<select name="" id="xx" multiple size="4">
+		<option class="aa" disabled>1</option>
+		<option class="aa">2</option>
+		<option class="aa">2</option>
+		<option class="aa">2</option>
+		<option class="aa">2</option>
+	</select>
+	<div class="cc">
+		<ul>
+			<li class="a">1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+		</ul>
+	</div>
+	<form action="">
+		<input type="text" name="" id="xxv">
+	</form>
+	<img src="http://i.imgur.com/MODfw7S.jpg" alt="">
+</body>
+<script src="src/loader.js"></script>
+<script>
+	// document.addEventListener('DOMContentLoaded',function(){
+	// 	alert('xxx')
+	// },false)
+	var log = console.log.bind(console);
+	otaLoader({
+		path: './src/',
+		alias: {
+			'tab': './src/components/tab.js'
+		},
+		// depend:{
+		// 	// 堆栈溢出
+		// 	'core': ['ajax','util','dom','storage','event','style'],
+		// 	'style': ['dom','timmer','util','event'],
+		// 	'dom': ['util'],
+		// 	'ota': 'timmer',
+		// 	'ajax': ['util'],
+		// 	'event': ['dom','util'],
+		// 	'tab':'core'
+		// }
+	})
+	require('core',function(ota){
+		var $ = ota.get
+		$('body').on('click','a',function(){
+			console.log(this.nodeName)
+			return false
+		})
+	})
+	// define('ota',['timmer'],function(timmer,exports){
+	// 	console.log(timmer);
+	// 	exports.name = 'xxx'
+	// })
+	// define('ota',['timmer'],function(timmer,exports){
+	// 	console.log(timmer);
+	// 	exports.name = 'xxx'
+	// })
+	// require('ota',function(ota){
+	// 	console.log(ota.name)
+	// })
+	// require('ota',function(ota){
+	// 	console.log(ota.name)
+	// })
+	// require(['core','tab','event'],function(ota,tab,event){
+	// 	ota.ajax({
+	// 		url: 'http://127.0.0.1:7000',
+	// 		type: 'post',
+	// 		// headers: {
+	// 		// 	'aa':'bbb'
+	// 		// }, //need allow 
+	// 		// crossdomain: true,
+	// 		// data: {
+	// 		// 	'req': 'utf-8'
+	// 		// },
+	// 		dataType: 'json',
+	// 		// fresh: false,
+	// 		success: function(data){
+	// 			console.log(data);
+	// 		},
+	// 		error: function(err){
+	// 			console.error(err)
+	// 		}
+	// 	})
+	// })
+	// require('core',function(ota){
+	// 	ota.setCookie({
+	// 		name:'ota',
+	// 		value: 'xxoo',
+	// 		expires: 1,
+	// 		// domain: 'http://127.0.0.1',
+	// 		// path: '/',
+	// 		// secure: true
+	// 	})
+	// 	console.log(ota.getCookie('ota'))
+	// 	ota.removeCookie('ota')
+	// 	ota.setItem('xx','oo')
+	// 	console.log(ota.getItem('xx'),ota.getItem('xx1'))
+	// 	console.log(ota.hasItem('xx'))
+	// 	console.log(ota.storageKeys())
+	// 	ota.clearItem()
+	// })
+	// require('util',function(util){
+	// 	util.Queue([function(next){
+	// 		console.log('1')
+	// 		next();
+	// 	},function(next){
+	// 		setTimeout(function(){
+	// 			console.log('2');
+	// 			next()
+	// 		},2000)
+	// 	}]).done(function(){
+	// 		console.log('done')
+	// 	})
+	// 	console.log(util.contains('aaaa','a'))
+	// 	console.log(util.contains([1,2,3],1))
+	// 	console.log(util.contains(document.body,document.getElementsByTagName('head')[0]))
+	// 	var a = {a:20}
+	// 	a = util.extend({a:30,b:40},a,true)
+	// 	console.log(a)
+	// 	util.each({a:20,b:40},function(el,key){
+	// 		console.log(el,key)
+	// 	})
+	// 	util.eval('   alert("xx")')
+	// 	log(util.isEmptyObject({}))
+	// 	log(util.isArrayLike(arguments))
+	// 	log(util.makeArray(arguments))
+	// 	console.log(util.parseHTML('<a>asdasd</a><table></table>'))
+	// })
+	// require(['dom'],function(dom){console.log(dom)})
+	// require('util',function(util){
+	// 	var Event = util.EventEmitter
+	// 	var pub = new Event
+	// 	pub.on('click',function(data){
+	// 		alert(data);
+	// 	})
+	// 	pub.emit('click','我靠')
+	// 	setTimeout(function(){
+	// 		pub.removeListener('click')
+	// 		console.log(pub.listeners('click'))
+	// 	})
+	// })
+	// require(['dom','event'],function(dom,event){
+	// 	console.log(dom.E)
+	// })
+	// require(['ota'],function(xx){
+	// 	console.log(xx)
+	// 	// ota.ready(function(){
+	// 	// 	console.log(this)
+	// 	// })
+	// 	// ota.get('body').on('click mouseover','a',function(e){
+	// 	// 	console.log(this.tagName,1)
+	// 	// 	return false;
+	// 	// })
+	// 	// ota.get('body').off('click','a')
+	// 	// ota.get('body').off()
+	// 	// ota.get('body').on('click','option',function(e){
+	// 	// 	console.log(this.tagName,2)
+	// 	// })
+	// 	// ota.get('body').on('click',function(e){
+	// 	// 	console.log(this.tagName,3)
+	// 	// })
+	// 	// var fn = function(e){
+	// 	// 	console.log('div')
+	// 	// }
+	// 	// ota.get('div').on('click',fn)
+	// 	// ota.get('div').on('mousewheel',function(e){
+	// 	// 	// console.log(e.delta)
+	// 	// })
+	// 	// ota.get('body').on('keypress',function(e){
+	// 	// 	console.log('xxxx')
+	// 	// })
+	// 	// ota.get('div').off('click',fn)
+	// 	// ota.get('body').off('click','a')
+	// 	// ota.get('body').off('click')
+	// 	// ota.get('body').off('mouseover')
+	// 	// ota.get('body').off()
+	// 	// ota.get('body').one('click','p',function(){
+	// 	// 	alert('xxxoo')
+	// 	// 	console.log(this)
+	// 	// })
+	// 	// ota.get('body').off('keypress')
+	// 	// ota.get('#xxv').on('blur',function(e){
+	// 	// 	console.log('xxxx1')
+	// 	// })
+	// 	// var $ = ota.get
+	// 	// console.log(ota)
+	// 	// $('p').fadeIn(function(){
+	// 	// 	console.log(this)
+	// 	// })
+		
+	// })
+	// require('core',function(ota){
+	// 	console.log(ota)
+	// })
+</script>
+</html>

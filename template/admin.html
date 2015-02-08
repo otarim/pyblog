@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>欢迎回来{{user.nickname}}</title>
+	{% include 'block/header.html' %}
+	<style>
+		h2 {margin-bottom: 10px;}
+		@media screen and (min-width:800px) {
+			main {position: absolute;left: 35%;top: 0;bottom: 0;right: 0;padding: 50px 100px 0;overflow-y: auto;}
+		}
+	</style>
+</head>
+<body>
+	{% include 'block/nav.html' %}
+	{% include 'block/user.html' %}
+	<main>
+		{% include 'block/post.html' %}
+		{% include 'block/arts.html' %}
+		{% include 'block/footer.html' %}
+	</main>
+</body>
+
+<script>
+	otaLoader({
+		alias: {
+			'Popbox': '/static/js/popbox.min.js'
+		}
+	})
+	require(['postData','arts','mainPage'])
+</script>
+</html>

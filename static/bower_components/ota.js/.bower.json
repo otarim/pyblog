@@ -1,0 +1,14 @@
+{
+  "name": "ota.js",
+  "homepage": "https://github.com/otarim/ota.js",
+  "_release": "da3f4a8bbc",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "da3f4a8bbc48c165704eb733e72b34941516a8db"
+  },
+  "_source": "git://github.com/otarim/ota.js.git",
+  "_target": "*",
+  "_originalSource": "ota.js",
+  "_direct": true
+}

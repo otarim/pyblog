@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+	* {margin: 0;padding: 0;}
+	.wrap {background: #70a1a1;/*border: 1px solid #d0a1a1;*/} /*border 起到 bfc 的作用？*/
+	.wrap p {overflow: hidden;word-wrap: break-word;}
+	.wrap img {float: left;}
+	.cl:after,.cl:before {display: table;content: '';} /*用于折叠外边距*/
+	.cl:after {clear: both;}
+	.cl {*zoom: 1;}
+	</style>
+</head>
+<body>
+	<div>
+	<div class="wrap cl">
+		<img src="" alt="" width="50" height="50">
+		<p>demodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemodemo</p>
+	</div>
+	<div class="wrap cl">
+		<img src="" alt="" width="50" height="50">
+		<p>demo</p>
+	</div>
+	</div>
+	<!-- 闭合浮动+overflow 图文列表 -->
+</body>
+</html>

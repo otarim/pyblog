@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="1.css">
+	<!-- <link rel="stylesheet" href="http://anijs.github.io/lib/animationcss/animate.css"> -->
+	<style>
+	.xx {
+		-webkit-animation: xxoo 1s ;
+		-o-animation: xxoo 1s ;
+		animation: xxoo 1s ;
+	}
+/*	@-webkit-keyframes xxoo {
+		from { opacity: 0 }
+		to { opacity: 1 }
+	}
+	@-o-keyframes xxoo {
+		from { opacity: 0 }
+		to { opacity: 1 }
+	}
+	@-moz-keyframes xxoo {
+		from { opacity: 0 }
+		to { opacity: 1 }
+	}
+	@keyframes xxoo {
+		from { opacity: 0 }
+		to { opacity: 1 }
+	}*/
+	
+	.xx {opacity: 1;transition: all linear 1s;background: red;width: 100px;height: 100px;text-align: center;}
+	.hidden {display: none;}
+	.hide {opacity: 0;}
+	</style>
+</head>
+<body>
+	<p class="xx">otarim</p>
+	<a href="" class="show">show</a>
+</body>
+<script src="../src/loader.js"></script>
+<script>
+	require('core',function(M){
+		var $ = M.get
+		var p = $('.xx')
+		$('body').on('click touchstart','.show',function(e){
+			if(p.hasClass('hide')){
+				p.removeClass('hidden')
+				setTimeout(function(){
+					p.removeClass('hide')
+				},20)
+			}else{
+				p.addClass('hide')
+				p.one('transitionend',function(){
+					p.addClass('hidden')
+				})
+			}
+			return false;
+		})
+
+	})
+</script>
+</html>

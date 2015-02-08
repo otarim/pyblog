@@ -1,0 +1,131 @@
+<style>
+	@media screen and (min-width:800px) {
+		/*input 元素不会继承 box-sizeing*/
+		.write-post input[type=text] {width: 100%;padding: .5em 1em;box-sizing: border-box;}
+		.write-content textarea {width: 100%;min-height: 250px;padding: 1em;box-sizing: border-box;}
+		.postBtn {width: 120px;letter-spacing: .5em;}
+		.write-postBtn {text-align: right;}
+		.write-media {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 36px;color: #fff;background: #8BC34A;text-align: center;border: 1px solid #60A113;}
+		.write-media:hover {background: #60A113;}
+		::-webkit-file-upload-button {cursor:pointer;}
+		/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
+		.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
+		.media-wrap {position: relative;display: inline-block;}
+		.media-wrap i {display: none;position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;}
+		.media-wrap::after {content: '';position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;background: rgba(0,0,0,.7);transition: opacity linear .3s;}
+		.media-wrap:hover i {display: block;}
+		.media-wrap:hover::after {opacity: 1;}
+		.write-tags-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;}
+	}
+	
+</style>
+<div class="write">
+	<h2>发布</h2>
+	<div class="write-post">
+		<p class="row"><input type="text" name="title" id="title" placeholder="标题"></p>
+		<div class="write-tags row">
+			<p class="row"><input type="text" class="write-tag" placeholder="文章标签,tab结束"></p>
+			<p id="tags" class="write-tags-inserted"></p>
+		</div>
+		<div class="write-media row"> + 插入头图<input type="file" id="file" class="media-file"></div>
+		<div class="write-media-inserted row"></div>
+		<div class="write-content row">
+			<textarea name="content" id="content" placeholder="从这里开始"></textarea>
+		</div>
+		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
+	</div>
+</div>
+{% include 'block/pop/callback.html' %}
+<script>
+	define('postData',['core','Popbox','arts'],function(ota,Popbox,arts,exports){
+		var $ = ota.get,
+			ajax = ota.ajax,
+			Popbox = Popbox.Popbox
+		$('#file').on('change',function(e){
+			var file = this.files[0],self = this
+			bannerValidate(file,function(err,ret){
+				if(err){
+					alert(err)
+					self.value = ''
+				}else{
+					$('.write-media-inserted').html('<span class="media-wrap"><img src="'+ret+'"><i>X</i></span>')
+				}
+			})
+		})
+		$('.postBtn').on('click',function(){
+			if($('#title').val() && $('#content').val()){
+				ajax({
+					url: '/api/post',
+					type: 'post',
+					dataType: 'json',
+					data: {
+						title: $('#title').val(),
+						tags: [].concat($('#tags em').html() || ''), // 多值处理
+						content: $('#content').val(),
+						file: $('#file')[0].files[0]
+					},
+					traditional: true,
+					success: function(data){
+						arts.renderPost(data.result)
+						var pop = new Popbox({
+							el: function(){
+								return $('#popA').html()
+							}
+						}).show()
+						setTimeout(function(){
+							pop.remove()
+						},1000)
+						$('.write input[type=text]').val('')
+						$('#tags').html('')
+						$('#file').val('')
+						$('#content').val('')
+						$('.write-media-inserted').html('')
+					}
+				})
+			}
+		})
+		$('.write-media-inserted').on('click','.media-wrap i',function(e){
+			$('#file').val('')
+			$('.write-media-inserted').html('')
+		})
+		var tags = $('#tags')
+		$('.write-tag').on('keydown',function(e){
+			if(e.which === 9){
+				e.preventDefault()
+				if(this.value !== ''){
+					var em = $('<em></em>')
+					em.css({'background':getRandomColor()})
+					em.text(this.value)
+					tags.append(em)
+					this.value = ''
+				}
+			}
+		})
+		$('.write-tags-inserted').on('click','em',function(e){
+			$(this).remove()
+			$('.write-tag')[0].focus()
+		})
+		function bannerValidate(file,callback){
+			var reader = new FileReader,MAX_SIZE = 1024*5*1024
+			if(file.type.match('image')){
+				reader.onload = function(e){
+					if(e.total > MAX_SIZE){
+						return callback('图片尺寸太大',null)
+					}
+					return callback(null,this.result)
+				}
+				reader.readAsDataURL(file)
+			}else{
+				return callback('图片格式有误',null)
+			}
+		}
+		var getRandomColor = (function(){
+			var colors = ['#E91E63','#5677FC','#8BC34A','#FFC107','#009688','#673AB7']
+			return function(){
+				var color = colors.shift()
+				colors.push(color)
+				return color
+			}
+		})()
+	})
+</script>

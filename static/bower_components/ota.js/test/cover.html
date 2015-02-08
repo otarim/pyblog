@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<img src="20140823225711602.jpg" width="200" alt="" id="img">
+</body>
+<script src="../src/plugsIn/rgbaster.js"></script>
+<script>
+	RGBaster.colors(document.getElementById('img'),{
+		exclude: ['rgb(255,255,255)','rgb(0,0,0)'],
+		success: function(payload){
+			var d = document.createElement('div')
+			d.style.cssText = 'display: inline-block;width: 100px;height: 100px;margin-right: 10px'
+			document.body.appendChild(d)
+			// var dd = d.cloneNode(true)
+			// document.body.appendChild(dd)
+			d.style.backgroundColor = payload.dominant
+		}
+	})
+</script>
+</html>

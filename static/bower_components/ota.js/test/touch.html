@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+	<!-- maximum-scale=1.0,user-scalable=no -->
+	<title>Document</title>
+	<style>
+	body {-webkit-user-select: none;}
+	.wrap {position: absolute;top: 50px;background: #d0a1a1;color: #2d222e;font-weight: bold;font-size: 2rem;transform: translateZ(0);width: 250px;height: 100px;overflow: hidden;}
+	.innerWrap::after {display: table;content: '';clear: both;}
+	.innerWrap {width: 1250px;}
+	.inner {float: left;width: 250px;height: 100px;}
+	.inner1 {background: #31a1a1;}
+	.inner2 {background: #53a11d;}
+	.inner3 {background: #d2a1d7;}
+	.log {position: absolute;top: 160px;color: #6093fa;}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<div class="innerWrap">
+			<div class="inner inner3">3</div>
+			<div class="inner inner1">1</div>
+			<div class="inner inner2">2</div>
+			<div class="inner inner3">3</div>
+			<div class="inner inner1">1</div>
+		</div>
+	</div>
+	<p>adadad</p>
+	<div class="log"></div>
+</body>
+<script src="../src/loader.js"></script>
+<!-- <script src="/otaCode/js/zepto.js"></script> -->
+<script type="xxoo">
+//     Zepto.js
+//     (c) 2010-2014 Thomas Fuchs
+//     Zepto.js may be freely distributed under the MIT license.
+
+;(function($){
+  var touch = {},
+    touchTimeout, tapTimeout, swipeTimeout, longTapTimeout,
+    longTapDelay = 750,
+    gesture
+
+  function swipeDirection(x1, x2, y1, y2) {
+    return Math.abs(x1 - x2) >=
+      Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
+  }
+
+  function longTap() {
+    longTapTimeout = null
+    if (touch.last) {
+      touch.el.trigger('longTap')
+      touch = {}
+    }
+  }
+
+  function cancelLongTap() {
+    if (longTapTimeout) clearTimeout(longTapTimeout)
+    longTapTimeout = null
+  }
+
+  function cancelAll() {
+    if (touchTimeout) clearTimeout(touchTimeout)
+    if (tapTimeout) clearTimeout(tapTimeout)
+    if (swipeTimeout) clearTimeout(swipeTimeout)
+    if (longTapTimeout) clearTimeout(longTapTimeout)
+    touchTimeout = tapTimeout = swipeTimeout = longTapTimeout = null
+    touch = {}
+  }
+
+  function isPrimaryTouch(event){
+    return (event.pointerType == 'touch' ||
+      event.pointerType == event.MSPOINTER_TYPE_TOUCH)
+      && event.isPrimary
+  }
+
+  function isPointerEventType(e, type){
+    return (e.type == 'pointer'+type ||
+      e.type.toLowerCase() == 'mspointer'+type)
+  }
+
+  $(document).ready(function(){
+    var now, delta, deltaX = 0, deltaY = 0, firstTouch, _isPointerType
+
+    if ('MSGesture' in window) {
+      gesture = new MSGesture()
+      gesture.target = document.body
+    }
+
+    $(document)
+      .bind('MSGestureEnd', function(e){
+        var swipeDirectionFromVelocity =
+          e.velocityX > 1 ? 'Right' : e.velocityX < -1 ? 'Left' : e.velocityY > 1 ? 'Down' : e.velocityY < -1 ? 'Up' : null;
+        if (swipeDirectionFromVelocity) {
+          touch.el.trigger('swipe')
+          touch.el.trigger('swipe'+ swipeDirectionFromVelocity)
+        }
+      })
+      .on('touchstart MSPointerDown pointerdown', function(e){
+        if((_isPointerType = isPointerEventType(e, 'down')) &&
+          !isPrimaryTouch(e)) return
+        firstTouch = _isPointerType ? e : e.touches[0]
+        if (e.touches && e.touches.length === 1 && touch.x2) {
+          // Clear out touch movement data if we have it sticking around
+          // This can occur if touchcancel doesn't fire due to preventDefault, etc.
+          touch.x2 = undefined
+          touch.y2 = undefined
+        }
+        now = Date.now()
+        delta = now - (touch.last || now)
+        touch.el = $('tagName' in firstTouch.target ?
+          firstTouch.target : firstTouch.target.parentNode)
+        touchTimeout && clearTimeout(touchTimeout)
+        touch.x1 = firstTouch.pageX
+        touch.y1 = firstTouch.pageY
+        if (delta > 0 && delta <= 250) touch.isDoubleTap = true
+        touch.last = now
+        longTapTimeout = setTimeout(longTap, longTapDelay)
+        // adds the current touch contact for IE gesture recognition
+        if (gesture && _isPointerType) gesture.addPointer(e.pointerId);
+      })
+      .on('touchmove MSPointerMove pointermove', function(e){
+        if((_isPointerType = isPointerEventType(e, 'move')) &&
+          !isPrimaryTouch(e)) return
+        firstTouch = _isPointerType ? e : e.touches[0]
+        cancelLongTap()
+        touch.x2 = firstTouch.pageX
+        touch.y2 = firstTouch.pageY
+
+        deltaX += Math.abs(touch.x1 - touch.x2)
+        deltaY += Math.abs(touch.y1 - touch.y2)
+      })
+      .on('touchend MSPointerUp pointerup', function(e){
+        if((_isPointerType = isPointerEventType(e, 'up')) &&
+          !isPrimaryTouch(e)) return
+        cancelLongTap()
+
+        // swipe
+        if ((touch.x2 && Math.abs(touch.x1 - touch.x2) > 30) ||
+            (touch.y2 && Math.abs(touch.y1 - touch.y2) > 30))
+
+          swipeTimeout = setTimeout(function() {
+            touch.el.trigger('swipe')
+            touch.el.trigger('swipe' + (swipeDirection(touch.x1, touch.x2, touch.y1, touch.y2)))
+            touch = {}
+          }, 0)
+
+        // normal tap
+        else if ('last' in touch)
+          // don't fire tap when delta position changed by more than 30 pixels,
+          // for instance when moving to a point and back to origin
+          if (deltaX < 30 && deltaY < 30) {
+            // delay by one tick so we can cancel the 'tap' event if 'scroll' fires
+            // ('tap' fires before 'scroll')
+            tapTimeout = setTimeout(function() {
+
+              // trigger universal 'tap' with the option to cancelTouch()
+              // (cancelTouch cancels processing of single vs double taps for faster 'tap' response)
+              var event = $.Event('tap')
+              event.cancelTouch = cancelAll
+              touch.el.trigger(event)
+
+              // trigger double tap immediately
+              if (touch.isDoubleTap) {
+                if (touch.el) touch.el.trigger('doubleTap')
+                touch = {}
+              }
+
+              // trigger single tap after 250ms of inactivity
+              else {
+                touchTimeout = setTimeout(function(){
+                  touchTimeout = null
+                  if (touch.el) touch.el.trigger('singleTap')
+                  touch = {}
+                }, 250)
+              }
+            }, 0)
+          } else {
+            touch = {}
+          }
+          deltaX = deltaY = 0
+
+      })
+      // when the browser window loses focus,
+      // for example when a modal dialog is shown,
+      // cancel all ongoing events
+      .on('touchcancel MSPointerCancel pointercancel', cancelAll)
+
+    // scrolling the window indicates intention of the user
+    // to scroll, not tap or swipe, so cancel all ongoing events
+    $(window).on('scroll', cancelAll)
+  })
+
+  ;['swipe', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown',
+    'doubleTap', 'tap', 'singleTap', 'longTap'].forEach(function(eventName){
+    $.fn[eventName] = function(callback){ return this.on(eventName, callback) }
+  })
+})(Zepto)
+</script>
+<script>
+	// require('core',function(ota){
+	// 	var $ = ota.get
+	// 	var emiter = new ota.EventEmitter
+		
+	// 	var touch = {},index = 0,detalX,detalY,delay,touchTimmer
+	// 	var wrap = $('.innerWrap'),
+	// 		cal = parseInt(wrap.css('translateX'),10) || 0
+		function matrixToArray(matrix) {
+			matrix = window.getComputedStyle(matrix[0],'').getPropertyValue('-webkit-transform')
+		    return matrix.substr(7, matrix.length - 8).split(', ')
+		}
+	// 	$('.innerWrap').on('touchstart',function(e){
+
+	// 		var finger = e.touches[0]
+	// 		delay = ota.now()
+	// 		clearTimeout(touchTimmer)
+	// 		if(touch.x2){
+	// 			touch.x2 =touch.y2 = undefined
+	// 		}
+	// 		touch.x1 = finger.pageX
+	// 		touch.y1 = finger.pageY
+
+	// 	}).on('touchmove',function(e){
+
+	// 		var finger = e.touches[0]
+	// 		touch.x2 = finger.pageX
+	// 		touch.y2 = finger.pageY
+	// 		detalX = Math.abs(touch.x2 - touch.x1)
+	// 		detalY = Math.abs(touch.y2 - touch.y1)
+	// 		if(detalX > 20){
+	// 			emiter.emit('swipeIng:wrap',touch.x2 - touch.x1)
+	// 		}
+	// 		return false
+	// 	}).on('touchend',function(e){
+	// 		if(ota.now() - delay <= 500 && detalX > 20 || detalX >= 125){
+	// 			if(touch.x2 > touch.x1){
+	// 				index--
+	// 			}else{
+	// 				index++
+	// 				if(index === 4){
+	// 					touch.last = true
+	// 				}
+	// 			}
+	// 		}
+	// 		touchTimmer = setTimeout(function(){
+	// 			emiter.emit('swipeEnd:wrap',-index * 250,touch.last)
+	// 			touch = {}
+	// 		},25)
+			
+	// 	})
+	// 	emiter.on('swipeIng:wrap',function(offset){
+	// 		wrap.css({
+	// 			'-webkit-transform': 'translateZ(0) translateX(' + (cal + Math.ceil(offset)) + 'px)'
+	// 		})
+	// 	})
+	// 	emiter.on('swipeEnd:wrap',function(offset,last){
+	// 		wrap.animate({
+	// 			'-webkit-transform': 'translateZ(0) translateX(' + offset + 'px)'
+	// 		},function(){
+	// 			if(last){
+	// 				wrap.css({
+	// 					'-webkit-transform': 'translateZ(0) translateX(' + (-250) + 'px)'
+	// 				})
+	// 				index = 1
+	// 			}
+	// 			cal = parseInt(matrixToArray(wrap)[4],10)
+	// 		})
+	// 	})
+	// })
+	otaLoader({
+		alias: {
+			'touch': '../src/components/touch.js'
+		},
+	})
+	require(['touch','core'],function(touch,ota){
+		var $ = ota.get
+		// $('div').swipe(function(e,a,b,c){
+		// 	console.log('xxx',a,b,c)
+		// 	return false
+		// })
+		var log = function(msg){
+			$('.log').append('<b>'+msg+'</b><br>')
+		}
+		var cal = parseInt($('.wrap').css('translateX'),10) || 0
+		$('div').longTap(function(e,a,b,c){
+			// console.log('xxx',a,b,c)
+			log('longTap')
+			return false
+		}).doubleTap(function(){
+			log('doubleTap')
+			return false
+		}).tap(function(){
+			log('tap')
+			return false
+		})
+		;['swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'].forEach(function(direction){
+			$('div')[direction](function(e,offset){
+				log(direction + offset)
+				return false
+			})
+		})
+		// ;['swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'].forEach(function(direction){
+		// 	$('p')[direction](function(e,offset){
+		// 		log('p' + direction + offset)
+		// 	})
+		// })
+		$('.innerWrap').swiping(function(e,touch){
+			var direction = touch.direction,
+				offset = touch.offset
+			if(direction === 'Right' || direction === 'Left'){
+				$(this).css({
+					'-webkit-transform': 'translateZ(0) translateX(' + (cal + Math.ceil(offset)) + 'px)'
+				})
+			}
+		})
+		$('.innerWrap').on('touchend',function(){
+			cal = parseInt(matrixToArray($(this))[4],10)
+		})
+		// $('div').trigger('swipe',1,2,3)
+		// $('p').swipe(function(){
+		// 	console.log('jj')
+		// })
+	})
+
+
+	// $('div').on('xxoo',function(e,b,c,d){
+
+	// 	console.log(b,c,d)
+	// 	return false
+	// })
+	// $('div').trigger('xxoo',[1,2,3])
+	// // document.getElementsByTagName('body')[0].addEventListener('xxoo',function(a,b,c,d){
+	// // 	console.log(a,b,c,d)
+	// // })
+	// var evt = document.createEvent('CustomEvent')
+	
+	// evt.initEvent('xxoo',true,true)
+	// evt._args = [1,2,3]
+	// document.getElementsByTagName('body')[0].dispatchEvent(evt)
+</script>
+</html>

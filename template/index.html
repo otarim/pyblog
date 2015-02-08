@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	{% include 'block/header.html' %}
+	<style>
+		.art {height: 250px;margin-bottom: 20px;}
+		.art::after {display: table;content: '';clear: both;}
+		.art h2 {margin-bottom: 20px;}
+		.art-banner {float: left;width: 40%;height: 100%;margin-right: 20px;}
+		.art p {color: #555;}
+		.art-time,.art-artist {padding: 0 5px;}
+		.art-artist {padding-left: 0;}
+	</style>
+</head>
+<body>
+	{% include 'block/nav.html' %}
+	<main>
+		<h1>最新创作</h1>
+		<div class="arts">
+			{% for post in posts %}
+			<section class="art">
+				<div class="art-banner" style="background: url('/static/{{post.media}}') no-repeat center center;background-size: cover;"></div>
+				<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
+				<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate|datetimeformat()}}</span></p>
+			</section>
+			{% endfor %}
+		</div>
+		{% include 'block/footer.html' %}
+	</main>
+	{% raw %}
+	<script id="template" type="x-tmpl-mustache">
+		<section class="art">
+			<div class="art-banner" style="background: url('/static/{{{post.media}}}') no-repeat center center;background-size: cover;"></div>
+			<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
+			<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate}}</span></p>
+		</section>
+	</script>
+	{% endraw %}
+</body>
+<script>
+	require(['mainPage','core'],function(mainPage,ota){
+		var $ = ota.get,scrollTimmer,
+			ajax = ota.ajax,
+			ajaxLock = false,
+			page = 1,pageNum = 5,maxPage
+		$('main').on('scroll',function(){
+			var self = this
+			clearTimeout(scrollTimmer)
+			scrollTimmer = setTimeout(function(){
+				if($(self).height() + self.scrollTop >= self.scrollHeight && !ajaxLock){
+					ajaxLock = !ajaxLock
+					;++page
+					if(maxPage && page > maxPage){
+						return --page
+					}
+					ajax({
+						url: '/api/post',
+						data: {
+							'pageNum': pageNum,
+							'page': page
+						},
+						dataType: 'json',
+						success: function(data){
+							ajaxLock = !ajaxLock
+							maxPage = Math.ceil(data.total / data.pageNum)
+							return handlerData(data)
+						}
+					})
+				}
+			},500)
+		})
+		var handlerData = (function(){
+			var template = $('#template').html()
+  			Mustache.parse(template)
+			return function(data){
+				data = data.result
+				var ret = []
+				data.forEach(function(d){
+					d.postDate = new Date(d.postDate*1e3).toLocaleString().replace(/\//g,'-')
+					ret.push(Mustache.render(template, {post: d}))
+				})
+				ret = ret.join('')
+				$('.arts').append(ret)
+			}
+		})()
+	})
+</script>
+</html>

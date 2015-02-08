@@ -1,0 +1,15 @@
+<style>
+	@media screen and (min-width:800px) {
+		.userCard {position: fixed;top: 0;left: 0;bottom: 0;width: 35%;height: 100%;background: rgba(110,110,110,.1);box-shadow: inset 2px 0 10px rgba(110,110,110,.5);}
+		.user {position: absolute;top: 50%;left: 50%;-webkit-transform: translate(-50%,-75%);transform: translate(-50%,-75%);text-align: center;}
+	}
+</style>
+<div class="userCard">
+	<div class="user">
+		<h2>个人资料</h2>
+		<img src="{{user.avator}}&s=150" alt="" class="user-avatar">
+		<p class="user-name">{{user.username}}</p>
+		<p class="user-nick">@{{user.nickname}}</p>
+		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}} 在 {{user.loginIp}}</p>
+	</div>
+</div>

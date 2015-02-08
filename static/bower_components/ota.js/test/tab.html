@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+	<title>Document</title>
+	<link rel="stylesheet" href="1.css">
+	<style>
+	* {box-sizing: border-box;}
+	html {height: 100%;font-size: 62.5%;}
+	body {width: 100%;height: 100%;transform: translate3d(0,0,0);-webkit-user-select: none;}
+	.wrap {width: 50%;height: 26rem;border: 1px solid #6093fa;}
+	.wrap section {display: -webkit-flex;display: flex;flex-flow: row nowrap;}
+	/*.scroll {-webkit-overflow-scrolling:touch;}*/
+	.scroll {height: 80px;-webkit-overflow-scrolling:touch;overflow: hidden;overflow-y: scroll;}
+	.scroll {-webkit-transform: translate3d(-120px,0,0);transform: translate3d(-120px,0,0);position: absolute;width: 120px;height: 20rem;background: #6093fa;color: #fff;top: 0;font-size: 1rem;}
+	</style>
+</head>
+<body>
+	<div class="wrap">
+		<ul>
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+		</ul>
+		<section>
+			<div>1</div>
+			<div>2</div>
+			<div>3</div>
+		</section>
+	</div>
+	<div class="scroll">
+			overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.overflow-scrolling: auto. For reference purposes, here is a scrolling layer with overflow-scrolling: auto . Test. Test. Test. Test. Test. Test. Test. Test. Test. Test. Test.
+	</div>
+</body>
+<script src="../src/loader.js"></script>
+<script>
+	otaLoader({
+		alias: {
+			'touch': '../src/components/touch.js',
+			'tab': '../src/components/tab.js'
+		},
+	})
+	require(['tab','core'],function(tab,core){
+		var $ = core.get,
+			supportTouch = 'ontouchstart' in document
+		$('ul').toggleCallback((supportTouch ? 'touchstart' : 'click'),function(){
+			$('body').animate({
+				'-webkit-transform': 'translate3d(120px,0,0)',
+				'transform': 'translate3d(120px,0,0)'
+			})
+			return false
+		},function(){
+			$('body').animate({
+				'-webkit-transform': null,
+				'transform': null
+			})
+			return false
+		})
+		$('section div').toggleCallback('click',function(){
+			console.log(1)
+		},function(){
+			console.log(2)
+		},function(){
+			console.log(3)
+		})
+	})
+</script>
+</html>

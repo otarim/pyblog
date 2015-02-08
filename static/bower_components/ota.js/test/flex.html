@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+	<link rel="stylesheet" href="1.css">
+	<style>
+	html {font-size: 62.5%;}
+	body {width: 100%;}
+	/*flex + direction:row == inline-flex*/
+	/*flex-flow = direction + wrap(是否换行)*/
+	.flex {display: -webkit-inline-flex;display: inline-flex;width: 88%;-webkit-justify-content: space-between;justify-content: space-between;align-items: center;}
+	/*justify-content,align-items x，y 轴*/
+	.item {padding: 2rem;}
+	.item:nth-child(2) {flex-grow:2;}
+	/*flex-grow 占位大小*/
+	/*flex {display: flex;}*/
+	/*flex: order 缩放大小*/
+	@media (max-width: 600px) {
+		body {background: red;}
+	}
+	</style>
+</head>
+<body>
+	<div class="flex">
+		<div class="item">1</div>
+		<div class="item">2<br/>2.1</div>
+		<div class="item">3</div>
+	</div>
+	<a href="">reverse</a>
+</body>
+<script src="../src/loader.js"></script>
+<script>
+	require('core',function(core){
+		var $ = core.get
+		$('a').on('click',function(){
+			$('.flex').css({
+				'-webkit-flex-direction': 'row-reverse',
+				'flex-direction': 'row-reverse'
+			})
+			return false
+		})
+	})
+</script>
+</html>

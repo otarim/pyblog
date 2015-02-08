@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	{% include 'block/header.html' %}
+</head>
+<body>
+	{% include 'block/nav.html' %}
+	<main>
+	<header>
+		<h2>这货是...</h2>
+		<div class="user">
+			<img src="{{user.avator}}&s=150" alt="" class="user-avatar">
+			<p class="user-nick">@{{user.nickname}}</p>
+			<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}} 在 {{user.loginIp}}</p>
+		</div>
+	</header>
+		{% if count %}
+		<h2>ta写过{{count}}篇文章</h2>
+		<ol>
+		{% for post in posts%}
+			<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% endfor %}
+		</ol>
+		{% else %}
+		<h2>ta什么也没留下</h2>
+		{% endif %}
+	</main>
+</body>
+<script>
+	require('mainPage')
+</script>
+</html>

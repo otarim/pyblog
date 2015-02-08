@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	{% include 'block/header.html' %}
+	<style>
+		header p {color: #555;}
+		.post-banner {display: block;margin: 0 auto 20px;}
+		.post-time,.post-artist {padding: 0 5px;}
+		.post-artist {padding-left: 0;}
+		section p {margin-bottom: 20px;}
+	</style>
+</head>
+<body>
+	{% include 'block/nav.html' %}
+	<main>
+		<article>
+			<header>
+				<h1>{{post.title}}</h1>
+				<p><em><a href="/users/{{post.artist._id}}" class="post-artist">{{post.artist.nickname}}</a></em>发表于<span class="post-time">{{post.postDate|datetimeformat()}}</span>
+				{% if post.tags %}
+				,包含标签: {{post.tags|wrapTags()}}
+				{% endif %}
+				{% if post.media %}</p>
+				<img src="/static/{{post.media}}" alt="" class="post-banner">
+				{% endif %}
+			</header>
+			<section>
+				{{post.content|markdownOutput()}}
+			</section>
+		</article>
+		<!-- 多说评论框 start -->
+		<aside class="ds-thread" data-thread-key="{{post._id}}" data-title="{{post.title}}" data-url="http://127.0.0.1:8080/posts/{{post._id}}"></aside>
+		<!-- 多说评论框 end -->
+		<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+		<script type="text/javascript">
+		var duoshuoQuery = {short_name:"otarim"};
+			(function() {
+				var ds = document.createElement('script');
+				ds.type = 'text/javascript';ds.async = true;
+				ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+				ds.charset = 'UTF-8';
+				(document.getElementsByTagName('head')[0] 
+				 || document.getElementsByTagName('body')[0]).appendChild(ds);
+			})();
+		</script>
+		<!-- 多说公共JS代码 end -->
+		{% include 'block/footer.html' %}
+	</main>
+</body>
+<script>
+	require(['mainPage'])
+</script>
+</html>

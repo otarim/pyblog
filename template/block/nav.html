@@ -1,0 +1,24 @@
+<style>
+	@media screen and (min-width:800px){
+		body {transition: transform linear .3s;}
+		nav {position: fixed;left: 0;top: 0;width: 50px;bottom: 0;height: 100%;background: #333;z-index: 10;box-shadow: inset -2px 0 10px rgba(10,10,10,.5);}
+		nav.show {left: 0;}
+		.bodyTransform {-webkit-transform: translate3d(200px,0,0);transform: translate3d(200px,0,0);}
+		.mainNav a {display: block;width: 50px;height: 50px;text-align: center;}
+		.mainNav a img {margin-top: 15px;opacity: .8;}
+		.mainNav a:hover,.mainNav a.current {background: #111;}
+		.mainNav a:hover img,.mainNav a.current img {opacity: 1;}
+	}
+</style>
+<nav class="mainNav">
+	<a href="/" class="home current"><img src="/static/imgs/home.svg" alt="" width="20" height="20"></a>
+	<a href="/u/0" class="admin"><img src="/static/imgs/account-circle.svg" alt="" width="20" height="20"></a>
+</nav>
+<script>
+	define('mainPage',['core'],function(ota,exports){
+		// var $ = ota.get
+		// $('.mainNav').on('click',function(){
+		// 	$('body').toggleClass('bodyTransform')
+		// })
+	})
+</script>

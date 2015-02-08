@@ -1,0 +1,69 @@
+<style>
+	@media screen and (min-width:800px) {
+		.arts ol {list-style: none;counter-reset: req;margin-left: 0;}
+		.arts li {line-height: 36px;height: 36px;text-align: right;}
+		.arts li::after {display: table;clear: both;content: '';}
+		/*.arts li a::before {content: counter(req);}*/
+		.arts li a {float: left;}
+		.arts li a:hover {border-bottom: none;}
+		.arts li .art-mod {float: none;}
+		.art-mod,.art-del {display: none;font-size: 12px;font-style: normal;cursor: pointer;margin-left: 5px;}
+		.arts li:hover .art-mod,.arts li:hover .art-del {display: inline;}
+		.art-del {color: #FF1F26;}
+		.art-del:hover {background: #FF1F26;color: #fff;}
+		.art-mod {color: #009688;}
+		.art-mod:hover {background: #009688;color: #fff;}
+	}
+</style>
+<div class="arts">
+	<h2>已发文章</h2>
+	{% if count %}
+	<ol>
+	{% for post in posts%}
+		<li data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>
+	{% endfor %}
+	</ol>
+	{% else %}
+	<p>你还没发文章，要来一发么?</p>
+	{% endif %}
+</div>
+{% include 'block/pop/del.html' %}
+<script>
+	define('arts',['core','Popbox'],function(ota,Popbox,exports){
+		var $ = ota.get,
+			ajax = ota.ajax,
+			Popbox = Popbox.Popbox
+		$('.arts ol').on('click','.art-del',function(e){
+			var self = this
+			e.preventDefault()
+			var pop = new Popbox({
+				el: function(){
+					return $('#pop').html()
+				},
+				events: {
+					'click#del': function(){
+						var id = $(self).closest('li').data('id'),popbox = this
+						ajax({
+							url: '/api/post/del',
+							type: 'post',
+							data: {
+								id: id,
+							},
+							success: function(){
+								$(self).closest('li').remove()
+								popbox.remove()
+							}
+						})
+					},
+					'click#remove': function(){
+						this.remove()
+					}
+				}
+			})
+			pop.show()
+		})
+		exports.renderPost = function(data){
+			$('.arts ol').prepend('<li data-id="'+data.id+'"><a href="/posts/'+data.id+'">'+data.title+'</a><i class="art-mod">[i修改]</i><i class="art-del">[x删除]</i></li>')
+		}
+	})
+</script>

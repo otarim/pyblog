@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div class="aa">xx</div>
+	<div class="aa bb">xx</div>
+	<span href="" class="one">unbind</span>
+	<a href="" class="off">off</a>
+</body>
+<script src="../src/loader.js"></script>
+<script>
+	require(['dom','event','style'],function(dom){
+		var $ = window.$ = dom.get
+		// $('body').on('click','.aa',function(){
+		// 	console.log(this)
+		// })
+		$('.aa').on('click',function(){
+			console.log(this)
+		})
+		$('.one').on('click',function(){
+			// $('.aa').remove()
+			$('.aa.bb').after($('.aa.bb').clone(true))
+			return false
+		})
+		$('body').on('click','.off',function(){
+			$('.aa').off('click')
+			return false
+		})
+	})
+</script>
+</html>
