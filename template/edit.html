@@ -52,7 +52,7 @@
 			<div class="write-media-inserted row">
 				{% if post.media %}
 				<span class="media-wrap">
-					<img src="/static/{{post.media}}" alt=""><i>X</i>
+					<img src="{{post.media}}" alt=""><i>X</i>
 				</span>
 				{% endif %}
 			</div>
@@ -63,7 +63,18 @@
 		</div>
 	</div>
 	</main>
-	{% include 'block/pop/callback.html' %}
+	{% macro pop(id) -%}
+	<template id="{{id}}">
+		<div class="pop">
+			<div class="pop-c">
+				{{caller()}}
+			</div>
+		</div>
+	</template>
+	{%- endmacro %}
+	{% call pop('popA') %}
+	    修改成功
+	{% endcall %}
 	<input type="hidden" name="postId" value="{{post._id}}" id="postId">
 	<input type="hidden" name="mediaChanged" value="false" id="mediaChanged">
 </body>

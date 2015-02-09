@@ -1,15 +1,120 @@
 <style>
 	@media screen and (min-width:800px) {
 		.userCard {position: fixed;top: 0;left: 0;bottom: 0;width: 35%;height: 100%;background: rgba(110,110,110,.1);box-shadow: inset 2px 0 10px rgba(110,110,110,.5);}
-		.user {position: absolute;top: 50%;left: 50%;-webkit-transform: translate(-50%,-75%);transform: translate(-50%,-75%);text-align: center;}
+		.user {position: absolute;top: 50%;left: 50%;-webkit-transform: translate(-50%,-50%);transform: translate(-50%,-50%);text-align: center;width: 70%;margin-left: 25px;}
 	}
+	.user h2 {position: relative;}
+	.user .edit-user {display: none;font-size: 14px;position: absolute;top: 50%;left: 50%;-webkit-transform: translate(150%,-35%);}
+	.userCard:hover .edit-user {display: block;}
+	.user-details {visibility: hidden;}
+	.user-details-show {visibility: visible;}
+	.user input[class$=edit],.user-avatar-edit-wrapper {display: none;}
+	.user-editMode input[class$=edit],.user-editMode .user-avatar-edit-wrapper {display: inline-block;vertical-align: top;}
+	.user-editMode span[class^=user-],.user-editMode a[class^=user-] {display: none;}
+	.user-editMode .user-avatar:hover {background: #E91E63;}
+	.user-avatar-row {position: relative;display: inline-block;}
+	.user-avatar-edit-wrapper {position: absolute;top: 10px;right: 10px;width: 10px;height: 10px;background: url(/static/imgs/translate.svg?a=) no-repeat 0 0;background-color: rgba(0,0,0,.8);background-size: contain;border: 5px solid rgba(0,0,0,.8);}
+	.user-avatar-edit {width: 100%;height: 100%;opacity: 0;}
+	.user-details {font-size: 12px;}
 </style>
+{% set site = user.site or 'http://' %}
 <div class="userCard">
 	<div class="user">
-		<h2>个人资料</h2>
-		<img src="{{user.avator}}&s=150" alt="" class="user-avatar">
-		<p class="user-name">{{user.username}}</p>
-		<p class="user-nick">@{{user.nickname}}</p>
+		<h2>个人资料<a href="javascript:;" class="edit-user">[修改名片]</a></h2>
+		<p class="user-avatar-row"><img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150"><i class="user-avatar-edit-wrapper"><input type="file" class="user-avatar-edit" id="user-avatar"></i></p>
+		<p>{{user.username}}</p>
+		<p><span class="user-nick">@{{user.nickname}}</span><input type="text" class="user-nick-edit" value="{{user.nickname}}"></p>
+		<p>
+			<span class="col"><!-- <img src="/static/imgs/language.svg" alt=""> --></span><a href="{{site}}" class="user-site">{{site}}</a><input type="text" class="user-site-edit" value="{{site}}">
+		</p>
 		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}} 在 {{user.loginIp}}</p>
+		<div class="user-details">
+			<p>
+				<span class="col">性别:</span>
+				<span class="val">
+					{% set checked = ' checked' if user.sex == 'male' %}
+					<input type="radio" name="sex" value="male" id="male" class="user-sex"{{checked}}><label for="male">男</label>
+					{% set checked = 'checked' if user.sex == 'female' %}
+					<input type="radio" name="sex" value="female" id="female" class="user-sex"{{checked}}><label for="female">女</label>
+				</span>
+			</p>
+			<p>
+				<button class="btn btn-danger user-apply-edit">修改</button>
+				<button class="btn user-cancel-edit">退出</button>
+				<button class="btn user-rollBack-edit" title="你的修改不会被提交">回滚</button>
+			</p>
+		</div>
 	</div>
 </div>
+<script>
+	define('userCard',['core'],function(ota,exports){
+		var $ = ota.get,ajax = ota.ajax,
+			bakUp = false
+		$('.user').on('click','.edit-user',function(){
+			if(!bakUp){
+				bakUp = {
+					// 仅提交有修改的字段
+					avatar: $('.user-avatar')[0].src,
+					nick: $('.user-nick').text(),
+					site: $('.user-site').text(),
+					sex: $('.user-sex:checked').val()
+				}
+			}
+			$('.user').addClass('user-editMode')
+			$('.user-details').addClass('user-details-show')
+		}).on('click','.user-rollBack-edit',function(){
+
+		}).on('click','.user-cancel-edit',function(){
+			$('.user').removeClass('user-editMode')
+			$('.user-details').removeClass('user-details-show')
+		}).on('click','.user-apply-edit',function(){
+			if($('.user-nick-edit').val()){
+				var data = {
+					nickname: $('.user-nick-edit').val(),
+					sex: $('.user-sex:checked').val(),
+					site: $('.user-site-edit').val()
+				}
+				if(bakUp.avModify){
+					data['avatar'] = $('.user-avatar-edit')[0].files[0]
+				}
+				ajax({
+					url: '/api/user',
+					type: 'put',
+					data: data,
+					dataType: 'json',
+					success: function(){
+						$('.user-nick').text('@'+$('.user-nick-edit').val())
+						$('.user-site').text($('.user-site-edit').val())
+						$('.user-cancel-edit').trigger('click')
+					}
+				})
+			}
+		})
+		$('.user-avatar-edit').on('change',function(){
+			var file = this.files[0],self = this
+			bannerValidate(file,function(err,ret){
+				if(err){
+					alert(err)
+					self.value = ''
+				}else{
+					bakUp.avModify = true
+					$('.user-avatar')[0].src = ret
+				}
+			})
+		})
+		function bannerValidate(file,callback){
+			var reader = new FileReader,MAX_SIZE = 1024*1*1024
+			if(file.type.match('image')){
+				reader.onload = function(e){
+					if(e.total > MAX_SIZE){
+						return callback('图片尺寸太大',null)
+					}
+					return callback(null,this.result)
+				}
+				reader.readAsDataURL(file)
+			}else{
+				return callback('图片格式有误',null)
+			}
+		}
+	})
+</script>

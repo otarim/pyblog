@@ -59,7 +59,7 @@ class reg:
 				'uid': uid,
 				'username': data.username,
 				'nickname': data.nickname,
-				'avator': getAvator(data.username),
+				'avatar': getAvatar(data.username),
 				'password': hashlib.md5(data.password).hexdigest(),
 				'regDate': time.time(),
 				'regIp': web.ctx.ip,
@@ -134,7 +134,7 @@ class dashboard:
 			raise web.redirect('/login')
 
 
-def getAvator(email):
+def getAvatar(email):
 	return 'http://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d='+web.net.urlquote('http://www2.warwick.ac.uk/services/sport/about-us/blank.jpg');
 
 

@@ -1,7 +1,9 @@
-<template id="popA">
+{% macro pop(id) -%}
+<template id="{{id}}">
 	<div class="pop">
 		<div class="pop-c">
-			发布成功！
+			{{caller()}}
 		</div>
 	</div>
 </template>
+{%- endmacro %}

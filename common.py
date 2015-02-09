@@ -29,9 +29,9 @@ def checkLogin():
 		return False
 
 # 上传
-def upload(file):
+def upload(file,path='/'):
 	filename = file.filename.replace('\\','/').split('/')[-1]
-	fout = open(upload_path+'/'+filename,'w')
+	fout = open(upload_path+path+filename,'w')
 	fout.write(file.file.read())
 	fout.close()
-	return 'upload/'+filename
+	return '/static/upload'+path+filename

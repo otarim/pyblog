@@ -5,6 +5,7 @@ import hashlib
 import time
 import json
 import cgi
+import types
 # import urllib
 from markdown import markdown
 from sign import sign
@@ -18,7 +19,8 @@ db = client.pyblog
 
 urls = (
 	'/post','post',
-	'/post/del', 'deletePost'
+	'/post/del', 'deletePost',
+	'/user','user'
 )
 
 class post:
@@ -29,11 +31,8 @@ class post:
 		for i in posts:
 			i['_id'] = str(i['_id'])
 			artists.append(i['artist'])
-		artists = list(db['users'].find({'_id': {'$in': artists}}))
+		artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'lastLoginTime': 0}))
 		for i in artists:
-			del(i['password'])
-			del(i['loginIp'])
-			del(i['lastLoginTime'])
 			i['_id'] = str(i['_id'])
 		web.header('Content-Type','application/json')
 		return json.dumps({
@@ -116,5 +115,42 @@ class deletePost:
 				raise '删除失败'
 		else:
 			return '干嘛呢?'
+
+class user:
+	def GET(self,username):
+		user = db['users'].find_one({'username': username},{'password': 0,'loginIp': 0,'lastLoginTime': 0})
+		web.header('Content-Type','application/json')
+		if user:
+			user['_id'] = str(user['_id'])
+			return json.dumps({
+				'code': 200,
+				'result': [user]
+			})
+		else:
+			return json.dumps({
+				'code': 500,
+				'msg': '用户不存在'
+			})
+	def PUT(self):
+		if checkLogin():
+			user = web.cookies().get('pyname')
+			setValue = {}
+			data = web.input(avatar={})
+			for i in data:
+				if i is not 'avatar':
+					setValue[i] = web.net.websafe(data[i])
+			if isinstance(data.avatar,types.InstanceType):
+				try:
+					setValue['avatar'] = upload(data.avatar,'/avatars/')
+				except:
+					return json.dumps({
+						'code': 500,
+						'msg': '文件大小异常'
+					})
+
+			db['users'].update({'username': user},{'$set': setValue})
+			return json.dumps({
+				'code': 200
+			})
 
 api = web.application(urls,locals())
