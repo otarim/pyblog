@@ -4,6 +4,10 @@
 	<meta charset="UTF-8">
 	<title>Document</title>
 	{% include 'block/header.html' %}
+	<style>
+		.regBtn {background: #8BC34A;display: inline-block;border-bottom: .03rem solid #555;padding: .08rem .1rem;line-height: 1.2;text-align: center;color: #fff;vertical-align: top;}
+		.regBtn:hover {background: #9AD952;}
+	</style>
 </head>
 <body>
 	{% include 'block/nav.html' %}
@@ -42,6 +46,7 @@
 		</p>
 		<p class="row">
 			<input type="submit" value="登录" class="loginBtn">
+			<a href="/u/reg" class="regBtn">注册</a>
 		</p>
 	</form>	
 	</main>
