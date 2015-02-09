@@ -43,36 +43,36 @@ class reg:
 			return '被注册了'
 		if data.username and data.password:
 			# 怎么搞？全局变量不能 from import?
-			if not service.LOCK:
-				service.LOCK = True
-				# r+ 使用r+ 模式不会先清空，但是会替换掉原先的文件
-				# w+ 消除文件内容，然后以读写方式打开文件。
-				# r+ 先读取，然后 write 可以实现 append 操作
-				fout = open(app_root+'/uid','r')
-				uid = int(fout.read()) + 1
-				fout.close()
-				fout = open(app_root+'/uid','w')
-				fout.write(str(uid))
-				fout.close()
-				service.LOCK = False
-				db['users'].insert({
-					'uid': uid,
-					'username': data.username,
-					'nickname': data.nickname,
-					'avator': getAvator(data.username),
-					'password': hashlib.md5(data.password).hexdigest(),
-					'regDate': time.time(),
-					'regIp': web.ctx.ip,
-					'loginIp': web.ctx.ip,
-					'lastLoginTime': time.time() 
-				})
-				writeSession({
-					'hasLogin': True,
-					'username': data.username
-				})
-				web.setcookie('pyname',data.username,36000,path='/')
-				web.setcookie('pyconnect',sign(data.username),36000,path='/')
-				raise web.redirect('/0') 
+			# if not service.LOCK:
+			# 	service.LOCK = True
+			# r+ 使用r+ 模式不会先清空，但是会替换掉原先的文件
+			# w+ 消除文件内容，然后以读写方式打开文件。
+			# r+ 先读取，然后 write 可以实现 append 操作
+			fout = open(app_root+'/uid','r')
+			uid = int(fout.read()) + 1
+			fout.close()
+			fout = open(app_root+'/uid','w')
+			fout.write(str(uid))
+			fout.close()
+			service.LOCK = False
+			db['users'].insert({
+				'uid': uid,
+				'username': data.username,
+				'nickname': data.nickname,
+				'avator': getAvator(data.username),
+				'password': hashlib.md5(data.password).hexdigest(),
+				'regDate': time.time(),
+				'regIp': web.ctx.ip,
+				'loginIp': web.ctx.ip,
+				'lastLoginTime': time.time() 
+			})
+			writeSession({
+				'hasLogin': True,
+				'username': data.username
+			})
+			web.setcookie('pyname',data.username,36000,path='/')
+			web.setcookie('pyconnect',sign(data.username),36000,path='/')
+			raise web.redirect('/0') 
 		
 
 # 登陆

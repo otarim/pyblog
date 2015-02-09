@@ -13,7 +13,7 @@
 		<div class="user">
 			<img src="{{user.avator}}&s=150" alt="" class="user-avatar">
 			<p class="user-nick">@{{user.nickname}}</p>
-			<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}} 在 {{user.loginIp}}</p>
+			<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
 		</div>
 	</header>
 		{% if count %}
