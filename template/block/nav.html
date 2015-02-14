@@ -3,6 +3,26 @@
 		body {transition: transform linear .3s;}
 		nav {position: fixed;left: 0;top: 0;width: 50px;bottom: 0;height: 100%;background: #333;z-index: 10;box-shadow: inset -2px 0 10px rgba(10,10,10,.5);}
 		nav.show {left: 0;}
+		nav .msg {position: relative;}
+		nav .msg i {display: none;width: 16px;height: 16px;font-size: 12px;background: #E51C23;color: #fff;border-radius: 8px;text-align: center;line-height: 16px;top: 9px;right: 4px;position: absolute;font-style: normal;} 
+		.notifys {padding: 50px;width: 400px;}
+		.notifys a {margin: 0;}
+		.notifys h5 {margin-bottom: 10px;}
+		.notifys h5 a {font-size: 12px;margin-left: 10px;}
+		.notify {max-height: 180px;overflow-y: scroll;}
+		.notify-data {margin-bottom: 10px;padding-left: 15px;position: relative;}
+		.notify-data::before {content: '';display: block;width: 8px;height: 8px;border-radius: 4px;background: #E51C23;position: absolute;top: 50%;left: 0;margin-top: -4px;}
+		.notify-data::after {display: table;content: '';clear: both;}
+		.notify-data img {float: left;border-radius: 25px;margin-right: 10px;}
+		.notify-data p {overflow: hidden;}
+		.notify-detail {font-size: 12px;}
+		.notify-rep,.notify-read {position: absolute;top: 50%;right: 0;-webkit-transform: translate(-50%,-50%);transform: translate(-50%,-50%);font-size: 12px;display: none;}
+		.notify-read {color: #fff;font-family: arial;background: #E51C23;width: 16px;height: 16px;border-radius: 8px;text-align: center;line-height: 16px;}
+		.notify-rep {right: 20px;}
+		.notify-data:hover .notify-rep,.notify-data:hover .notify-read {display: block;}
+		.notify-repText {padding: 0 5px;}
+		.notify-repText input {height: 28px;width: 230px;margin-right: 10px;vertical-align: top;font-size: 12px;}
+		.notify-repText .send {width: 50px;height: 28px;font-size: 12px;line-height: 28px;padding: 0;vertical-align: top;}
 		.bodyTransform {-webkit-transform: translate3d(200px,0,0);transform: translate3d(200px,0,0);}
 		.mainNav a {display: block;width: 50px;height: 50px;text-align: center;}
 		.mainNav a img {margin-top: 15px;opacity: .8;}
@@ -13,12 +33,129 @@
 <nav class="mainNav">
 	<a href="/" class="home current"><img src="/static/imgs/home.svg" alt="" width="20" height="20"></a>
 	<a href="/u/0" class="admin"><img src="/static/imgs/account-circle.svg" alt="" width="20" height="20"></a>
+	{% if Login %}
+	<a href="javascript:;" class="msg"><img src="/static/imgs/msg.svg" alt="" width="20" height="20"><i></i></a>
+	<a href="http://112.74.104.132:9527/#/"><img src="/static/imgs/speaker.svg" alt="" width="20" height="20"><i></i></a>
+	{% endif %}
 </nav>
+{% raw %}
+<template id="notifyTpl">
+	<div class="pop notifys">
+		{{#notify.count}}
+		<h5>你收到{{notify.count}}个通知<!-- <a href="">全部标记为已读</a> --></h5>
+		<div class="notify">
+		{{#notify.result}}
+			<div class="notify-data" data-index="{{@index}}">
+				<!-- <time>{{date}}</time> -->
+				<img src="{{from.avatar}}" alt="" width="50" height="50">
+				<div class="notify-detail">
+					<a href="/users/{{from._id}}">{{from.nickname}}</a>
+					<p>{{msg}}</p>
+				</div>
+				<a href="" class="notify-rep" data-event="reply" data-name="{{from.username}}" data-nick="{{from.nickname}}">回复</a>
+				<a href="" class="notify-read" data-id="{{_id}}" data-event="read">X</a>
+			</div>
+		{{/notify.result}}
+		</div>
+		{{/notify.count}}
+		{{^notify.count}}
+		<h5>暂无未读通知</h5>
+		{{/notify.count}}
+		<p class="notify-repText" style="display: none;"><input type="text"><button class="btn send" data-event="send">回复</button></p>
+	</div>
+</template>
+{% endraw %}
 <script>
-	define('mainPage',['core'],function(ota,exports){
-		// var $ = ota.get
-		// $('.mainNav').on('click',function(){
-		// 	$('body').toggleClass('bodyTransform')
-		// })
+	define('mainPage',['Popbox','core','socket'],function(Popbox,ota,socket,exports){
+		var $ = ota.get,Popbox = Popbox.Popbox,ajax = ota.ajax,socket = socket.socket
+			msg = $('.msg'),
+			notify = $('.msg i'),
+			notifyData = {
+				'code': 200,
+				'count': 0,
+				'result': [],
+				'to': {}
+			}
+		var template = $('#notifyTpl').html()
+		Mustache.parse(template)
+		var notityReaded = function(index){
+			var count 
+			if(count = +notify.text()){
+				count--
+				notifyData.count--
+				notifyData.result.splice(index,1)
+				console.log(notifyData.result)
+				if(count){
+					notify.text(count)
+				}else{
+					notify.text(0)
+					notify.css({'display': 'none'})
+				}
+			}
+		}
+  		var renderNotify = function(){
+			new Popbox({
+				el: function(){
+					return Mustache.render(template, {notify: notifyData})
+				},
+				events: {
+					'click#reply': function(e){
+						e.preventDefault()
+						var p = $(e.target).parent('.notify-data'),
+							rep = $('.notify-repText')
+						p.after(rep)
+						p[0].scrollIntoView()
+						rep.show()
+						$('.notify-repText input').attr('placeholder','@' + $(e.target).data('nick'))
+						$('.notify-repText .send').data('name',$(e.target).data('name'))
+						$('.notify-repText input')[0].focus()
+					},
+					'click#send': function(e){
+						socket.emit('msg',{
+							to: $(e.target).data('name'),
+							msg: $('.notify-repText input').val()
+						})
+						$('.notify-repText').hide()
+						$('.notify-repText input').val('')
+					},
+					'click#read': function(e){
+						e.preventDefault()
+						var target = $(e.target),
+							msg = target.parent('.notify-data')
+						sendReadFeed($(e.target).data('id'))
+						notityReaded(getIndex(msg[0],$('.notify .notify-data')))
+						msg.remove()
+					}
+				}
+			}).show()
+  		}
+  		var sendReadFeed = function(id){
+  			(new Image).src = '/api/msg/read?id=' + id
+  		}
+  		// fuck...
+  		var getIndex = function(el,p){
+  			for(var i = 0,l = p.length;i < l;i++){
+  				if(p[i] === el){
+  					return i
+  				}
+  			}
+  			return -1
+  		}
+		exports.updateNotify = function(count){
+			if(!(+notify.text() || 0)){
+				notify.css({'display': 'block'})
+			}
+			notify.text((+notify.text() || 0) + count)
+		}
+		exports.updateNotifyData = function(data){
+			notifyData.count++
+			notifyData.result.unshift(data)
+		}
+		exports.storeNotify = function(data){
+			notifyData = data
+		}
+		msg.on('click',function(e){
+			renderNotify()
+		})
 	})
 </script>

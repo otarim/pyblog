@@ -20,7 +20,9 @@ db = client.pyblog
 urls = (
 	'/post','post',
 	'/post/del', 'deletePost',
-	'/user','user'
+	'/user','user',
+	'/msg', 'getMsg',
+	'/msg/read', 'changeMsgStatus'
 )
 
 class post:
@@ -31,7 +33,7 @@ class post:
 		for i in posts:
 			i['_id'] = str(i['_id'])
 			artists.append(i['artist'])
-		artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'lastLoginTime': 0}))
+		artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'regIp': 0,'lastLoginTime': 0}))
 		for i in artists:
 			i['_id'] = str(i['_id'])
 		web.header('Content-Type','application/json')
@@ -46,7 +48,7 @@ class post:
 		if checkLogin():
 			data = web.input(file={},tags=[]) # 这什么鬼？！！！！！ 无 file={}报错。。擦
 			fileurl = None
-			if type(data.file) is not StringType:
+			if isinstance(data.file,types.InstanceType):
 				try:
 					fileurl = upload(data.file)
 				except:
@@ -85,7 +87,7 @@ class post:
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':
-				if type(data.file) is not StringType:
+				if isinstance(data.file,types.InstanceType):
 					try:
 						setValue['media'] = upload(data.file)
 					except:
@@ -118,7 +120,7 @@ class deletePost:
 
 class user:
 	def GET(self,username):
-		user = db['users'].find_one({'username': username},{'password': 0,'loginIp': 0,'lastLoginTime': 0})
+		user = db['users'].find_one({'username': username},{'password': 0,'loginIp': 0,'regIp': 0,'lastLoginTime': 0})
 		web.header('Content-Type','application/json')
 		if user:
 			user['_id'] = str(user['_id'])
@@ -152,5 +154,44 @@ class user:
 			return json.dumps({
 				'code': 200
 			})
+
+class getMsg:
+	def __fineUser(self,val):
+		user = db['users'].find_one({'username': val},{'username': 1,'nickname': 1,'_id': 1,'avatar': 1})
+		if(user):
+			user['_id'] = str(user['_id'])
+		return user
+	def __transformUser(self,msgs):
+		hash = {}
+		for msg in msgs:
+			msg['_id'] = str(msg['_id'])
+			if msg['from'] in hash:
+				msg['from'] = hash[msg['from']]
+			else:
+				username = msg['from']
+				msg['from'] = hash[username] = self.__fineUser(username)
+		return msgs
+	def GET(self):
+		if checkLogin():
+			user = web.cookies().get('pyname')
+			msgs = list(db['msg'].find({'to': user,'read': False},{'to': 0}))
+			msgs = self.__transformUser(msgs)
+			web.header('Content-Type','application/json')
+			return json.dumps({
+				'code': 200,
+				'count': len(msgs),
+				'to': self.__fineUser(user),
+				'result': msgs
+			})
+	def POST(self):
+		if checkLogin():
+			data = web.input()
+
+class changeMsgStatus:
+	def GET(self):
+		data = web.input()
+		db['msg'].update({'_id': ObjectId(data['id'])},{'$set': {
+			'read': True
+		}}) 
 
 api = web.application(urls,locals())

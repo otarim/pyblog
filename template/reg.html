@@ -1,32 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-	<style>
-		input.regBtn {background: #8BC34A;}
-		input.regBtn:hover {background: #9AD952;}
-	</style>
-</head>
-<body>
-	{% include 'block/nav.html' %}
-	<main>
-		<h1>欢迎加入</h1>
-		<form action="/u/reg" method="post">
-			<p class="row"><input type="email" name="username" id="username" class="input-field" placeholder="邮箱"></p>
-			<p class="row"><input type="text" name="nickname" id="nickname" class="input-field" placeholder="昵称"></p>
-			<p class="row"><input type="password" name="password" id="password" class="input-field" placeholder="密码"></p>
-			<p class="row">
-				<input type="submit" value="注册" class="regBtn">
-				<a href="/u/login" class="loginBtn">已有账号？</a>
-			</p>
-		</form>	
-	</main>
-</body>
+{% extends 'layout.html' %}
+{% block title %}欢迎加入{% endblock %}
+{% block header %}
+<style>
+	input.regBtn {background: #8BC34A;}
+	input.regBtn:hover {background: #9AD952;}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+	<h1>欢迎加入</h1>
+	<form action="/u/reg" method="post">
+		<p class="row"><input type="email" name="username" id="username" class="input-field" placeholder="邮箱"></p>
+		<p class="row"><input type="text" name="nickname" id="nickname" class="input-field" placeholder="昵称"></p>
+		<p class="row"><input type="password" name="password" id="password" class="input-field" placeholder="密码"></p>
+		<p class="row">
+			<input type="submit" value="注册" class="regBtn">
+			<a href="/u/login" class="loginBtn">已有账号？</a>
+		</p>
+	</form>	
+</main>
+{% endblock %}
+{% block footer %}
 <script>
 	require('core',function(ota){
 		var data = (new Date).getHours()
 	})
 </script>
-</html>
+{% endblock %}

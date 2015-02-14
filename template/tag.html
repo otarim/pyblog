@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-</head>
-<body>
-	{% include 'block/nav.html' %}
-	<main>
-		{% if count %}
-		<h2>共匹配到{{count}}篇文章</h2>
-		<ul>
-		{% for post in posts%}
-			<li>
-				<a href="/posts/{{post._id}}">{{post.title}}</a>
-				<p>包含标签: {{post.tags|wrapTags()}}</p>
-			</li>
-		{% endfor %}
-		</ul>
-		{% else %}
-		<h2>什么也没找到...</h2>
-		{% endif %}
-	</main>
-</body>
+{% extends 'layout.html' %}
+{% block title %}tag{% endblock %}
+{% block content %}
+<main>
+	{% if count %}
+	<h2>共匹配到{{count}}篇文章</h2>
+	<ul>
+	{% for post in posts%}
+		<li>
+			<a href="/posts/{{post._id}}">{{post.title}}</a>
+			<p>包含标签: {{post.tags|wrapTags()}}</p>
+		</li>
+	{% endfor %}
+	</ul>
+	{% else %}
+	<h2>什么也没找到...</h2>
+	{% endif %}
+</main>
+{% endblock %}
+{% block footer %}
 <script>
 	require('mainPage')
 </script>
-</html>
+{% endblock %}

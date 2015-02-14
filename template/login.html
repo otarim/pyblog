@@ -1,59 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-	<style>
-		.regBtn {background: #8BC34A;display: inline-block;border-bottom: .03rem solid #555;padding: .08rem .1rem;line-height: 1.2;text-align: center;color: #fff;vertical-align: top;}
-		.regBtn:hover {background: #9AD952;}
-	</style>
-</head>
-<body>
-	{% include 'block/nav.html' %}
-	<main>
-	<h1><span id="hello"></span>欢迎回来~</h1>
-	<script>
-		(function(){
-			var now = (new Date).getHours(),
-				hello = document.getElementById('hello'),msg = ''
-			switch(true){
-				case now > 6 && now <= 10:
-					msg = '早上好。'
-					break
-				case now > 10 && now <= 14:
-					msg = '中午好。'
-					break
-				case now > 14 && now < 18:
-					msg = '下午好。'
-					break
-				case now >= 18 && now <= 24:
-					msg = '晚上好。'
-					break
-				case now > 0 && now <= 6:
-					msg = '擦，别熬夜！'
-					break
-			}
-			hello.innerHTML = msg
-		})()
-	</script>
-	<form action="/u/login" method="post">
-		<p class="row">
-			<input type="email" name="username" id="username" class="input-field" placeholder="邮箱">
-		</p>
-		<p class="row">
-			<input type="password" name="password" id="password" class="input-field" placeholder="密码">
-		</p>
-		<p class="row">
-			<input type="submit" value="登录" class="loginBtn">
-			<a href="/u/reg" class="regBtn">注册</a>
-		</p>
-	</form>	
-	</main>
-</body>
+{% extends 'layout.html' %}
+{% block title %}欢迎回来~{% endblock %}
+{% block header %}
+<style>
+	.regBtn {background: #8BC34A;display: inline-block;border-bottom: .03rem solid #555;padding: .08rem .1rem;line-height: 1.2;text-align: center;color: #fff;vertical-align: top;}
+	.regBtn:hover {background: #9AD952;}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+<h1><span id="hello"></span>欢迎回来~</h1>
+<script>
+	(function(){
+		var now = (new Date).getHours(),
+			hello = document.getElementById('hello'),msg = ''
+		switch(true){
+			case now > 6 && now <= 10:
+				msg = '早上好。'
+				break
+			case now > 10 && now <= 14:
+				msg = '中午好。'
+				break
+			case now > 14 && now < 18:
+				msg = '下午好。'
+				break
+			case now >= 18 && now <= 24:
+				msg = '晚上好。'
+				break
+			case now > 0 && now <= 6:
+				msg = '擦，别熬夜！'
+				break
+		}
+		hello.innerHTML = msg
+	})()
+</script>
+<form action="/u/login" method="post">
+	<p class="row">
+		<input type="email" name="username" id="username" class="input-field" placeholder="邮箱">
+	</p>
+	<p class="row">
+		<input type="password" name="password" id="password" class="input-field" placeholder="密码">
+	</p>
+	<p class="row">
+		<input type="submit" value="登录" class="loginBtn">
+		<a href="/u/reg" class="regBtn">注册</a>
+	</p>
+</form>	
+</main>
+{% endblock %}
+{% block footer %}
 <script>
 	require('core',function(ota){
 		
 	})
 </script>
+{% endblock %}
 </html>

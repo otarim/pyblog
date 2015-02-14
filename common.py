@@ -35,3 +35,8 @@ def upload(file,path='/'):
 	fout.write(file.file.read())
 	fout.close()
 	return '/static/upload'+path+filename
+
+def writeSession(arg):
+	for i in arg:
+		web.ctx.session[i] = arg[i]
+

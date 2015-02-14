@@ -1,19 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-	<style>
-		header p {color: #555;}
-		.post-banner {display: block;margin: 0 auto 20px;}
-		.post-time,.post-artist {padding: 0 5px;}
-		.post-artist {padding-left: 0;}
-		section p {margin-bottom: 20px;}
-	</style>
-</head>
-<body>
-	{% include 'block/nav.html' %}
+{% extends 'layout.html' %}
+{% block title %}{{post.title}}{% endblock %}
+{% block header %}
+<style>
+	header p {color: #555;}
+	.post-banner {display: block;margin: 0 auto 20px;}
+	.post-time,.post-artist {padding: 0 5px;}
+	.post-artist {padding-left: 0;}
+	section p {margin-bottom: 20px;}
+</style>
+{% endblock %}
+{% block content %}
 	<main>
 		<article>
 			<header>
@@ -48,8 +44,9 @@
 		<!-- 多说公共JS代码 end -->
 		{% include 'block/footer.html' %}
 	</main>
-</body>
+{% endblock %}
+{% block footer %}
 <script>
 	require(['mainPage'])
 </script>
-</html>
+{% endblock %}

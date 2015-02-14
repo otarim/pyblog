@@ -1,34 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-</head>
-<body>
-	{% include 'block/nav.html' %}
-	<main>
-	<header>
-		<h2>这货是...</h2>
-		<div class="user">
-			<img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150">
-			<p class="user-nick">@{{user.nickname}}</p>
-			<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
-		</div>
-	</header>
-		{% if count %}
-		<h2>ta写过{{count}}篇文章</h2>
-		<ol>
-		{% for post in posts%}
-			<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
-		{% endfor %}
-		</ol>
-		{% else %}
-		<h2>ta什么也没留下</h2>
+{% extends 'layout.html' %}
+{% block title %}{{user.nickname}}的主页{% endblock %}
+{% block header %}
+<style>
+	.user-chat:hover {text-decoration: none;}
+	.rep {padding: 30px;width: 400px;height: 250px;}
+	.rep h5 {margin-bottom: 10px;}
+	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
+	.rep p {text-align: right;}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+<header>
+	<h2>这货是...</h2>
+	<div class="user">
+		<img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150">
+		{% if Login %}
+		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;">[未关注]</a></p>
 		{% endif %}
-	</main>
-</body>
+		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
+	</div>
+</header>
+	{% if count %}
+	<h2>ta写过{{count}}篇文章</h2>
+	<ol>
+	{% for post in posts%}
+		<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+	{% endfor %}
+	</ol>
+	{% else %}
+	<h2>ta什么也没留下</h2>
+	{% endif %}
+</main>
+{% endblock %}
+{% block footer %}
+{% if Login %}
+{% raw %}
+<template id="rep">
+	<div class="pop rep">
+		<h5>发送私信给{{to}}</h5>
+		<textarea class="rep-c" placeholder="@{{to}}"></textarea>
+		<p>
+			<button class="btn send" data-event="send">发私信</button>
+		</p>
+	</div>
+</template>
+{% endraw %}
 <script>
-	require('mainPage')
+	require(['socket','mainPage','Popbox','core'],function(socket,mainPage,Popbox,ota){
+		var $ = ota.get,Popbox = Popbox.Popbox
+			user = ota.getCookie('pyname')
+		var template = $('#rep').html()
+		Mustache.parse(template)
+		if(user){
+			$('.user-chat').on('click',function(e){
+				e.preventDefault()
+				var to = $(this).data('name')
+				new Popbox({
+					el: function(){
+						return Mustache.render(template, {to: $(e.target).data('nick')})
+					},
+					events: {
+						'click#send': function(e){
+							socket.socket.emit('msg',{
+								to: to,
+								msg: $('.rep-c').val()
+							})
+							this.remove()
+						}
+					}
+				}).show()
+				$('.rep-c')[0].focus()
+			})
+		}
+	})
 </script>
-</html>
+{% endif %}
+{% endblock %}

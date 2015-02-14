@@ -1,47 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	{% include 'block/header.html' %}
-	<style>
-		.arts {min-height: 500px;}
-		.art {margin-bottom: 20px;}
-		.art::after {display: table;content: '';clear: both;}
-		.art h2 {margin-bottom: 20px;}
-		.art-banner {float: left;width: 40%;height: 250px;margin-right: 20px;}
-		.art p {color: #555;}
-		.art-time,.art-artist {padding: 0 5px;}
-		.art-artist {padding-left: 0;}
-	</style>
-</head>
-<body>
-	{% include 'block/nav.html' %}
-	<main>
-		<h1>最新创作</h1>
-		<div class="arts">
-			{% for post in posts %}
-			<section class="art">
-				{% if post.media %}
-				<div class="art-banner" style="background: url('{{post.media}}') no-repeat center center;background-size: cover;"></div>
-				{% endif%}
-				<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
-				<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate|datetimeformat()}}</span></p>
-			</section>
-			{% endfor %}
-		</div>
-		{% include 'block/footer.html' %}
-	</main>
-	{% raw %}
-	<script id="template" type="x-tmpl-mustache">
+{% extends 'layout.html' %}
+{% block title %}pyblog{% endblock %}
+{% block header %}
+<style>
+	.arts {min-height: 500px;}
+	.art {margin-bottom: 20px;}
+	.art::after {display: table;content: '';clear: both;}
+	.art h2 {margin-bottom: 20px;}
+	.art-banner {float: left;width: 40%;height: 250px;margin-right: 20px;}
+	.art p {color: #555;}
+	.art-time,.art-artist {padding: 0 5px;}
+	.art-artist {padding-left: 0;}
+</style>
+{% endblock%}
+{% block content %}
+<main>
+	<h1>最新创作</h1>
+	<div class="arts">
+		{% for post in posts %}
 		<section class="art">
-			<div class="art-banner" style="background: url('/static/{{{post.media}}}') no-repeat center center;background-size: cover;"></div>
+			{% if post.media %}
+			<div class="art-banner" style="background: url('{{post.media}}') no-repeat center center;background-size: cover;"></div>
+			{% endif%}
 			<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
-			<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate}}</span></p>
+			<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate|datetimeformat()}}</span></p>
 		</section>
-	</script>
-	{% endraw %}
-</body>
+		{% endfor %}
+	</div>
+	{% include 'block/footer.html' %}
+</main>
+{% endblock %}
+
+{% block footer %}
+{% raw %}
+<script id="template" type="x-tmpl-mustache">
+	<section class="art">
+		{{#post.media}}
+		<div class="art-banner" style="background: url('{{{post.media}}}') no-repeat center center;background-size: cover;"></div>
+		{{/post.media}}
+		<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
+		<p><em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate}}</span></p>
+	</section>
+</script>
+{% endraw %}
 <script>
 	require(['mainPage','core'],function(mainPage,ota){
 		var $ = ota.get,scrollTimmer,
@@ -90,4 +90,4 @@
 		})()
 	})
 </script>
-</html>
+{% endblock %}

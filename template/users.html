@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block title %}所有成员{% endblock %}
+{% block header %}
+<style>
+	.user {display: inline-block;box-shadow: 0 0 5px rgba(110,110,110,.2);padding: 10px 5px 20px;background: #fff;margin: 5px;text-align: center;}
+	.user header {position: relative;margin-bottom: 10px;}
+	.user header img {border-radius: 60px;}
+	.user header i {position: absolute;}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+	<h1>已注册会员</h1>
+	{% if users %}
+	<div class="users">
+	{% for user in users %}
+		<div class="user">
+			<a href="/users/{{user._id}}">
+				<header>
+					<i>{{user.uid}}</i>
+					<img src="{{user.avatar}}" alt="" width="120" height="120">
+				</header>
+				<section>
+					<p>{{user.nickname}}</p>
+				</section>
+			</a>
+		</div>
+	{% endfor %}
+	</div>
+	{% else %}
+	{% endif %}
+</main>
+{% endblock %}

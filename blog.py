@@ -19,6 +19,7 @@ urls = (
 	'/(.*)/', 'redirect',
 	'/', 'index',
 	'/posts/(.*)', 'showPost',
+	'/users','getAllUsers',
 	'/users/(.*)', 'showUser',
 	'/u', admin,
 	'/api',api,
@@ -92,6 +93,16 @@ class showUser:
 			'count': len(posts)
 		})
 
+class getAllUsers:
+	def GET(self):
+		if checkLogin:
+			users = list(db['users'].find({},{'_id': 1,'avatar':1,'uid':1,'nickname': 1,'sex': 1}).sort('uid',1))
+			return render.users({
+				'users': users
+			})
+		else:
+			return web.redirect('/u/login')
+
 class tag:
 	def GET(self,tag):
 		posts = list(db['posts'].find({'tags':{'$regex':'('+tag+'$)|('+tag+',)'}}))
@@ -126,6 +137,9 @@ class editPost:
 			})
 
 def beforeReq():
+	render._lookup.globals.update(
+		Login = checkLogin()
+	)
 	web.ctx.session = session
 	web.header('Content-Type','text/html; charset=utf-8')
 	return

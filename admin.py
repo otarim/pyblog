@@ -19,14 +19,11 @@ urls = (
 	'/login', 'login',
 	'/logout', 'logout',
 	'/reg', 'reg',
+	'/msg', 'msg'
 )
 
 
 admin = web.application(urls,locals())
-
-def writeSession(arg):
-	for i in arg:
-		web.ctx.session[i] = arg[i]
 
 #注册
 class reg:
@@ -54,7 +51,6 @@ class reg:
 			fout = open(app_root+'/uid','w')
 			fout.write(str(uid))
 			fout.close()
-			service.LOCK = False
 			db['users'].insert({
 				'uid': uid,
 				'username': data.username,
@@ -132,6 +128,7 @@ class dashboard:
 			})
 		else:
 			raise web.redirect('/login')
+
 
 
 def getAvatar(email):
