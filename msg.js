@@ -37,43 +37,43 @@ io.on('connection',function(socket){
 	socket.on('add',function(username){
 		this.username = username
 	}).on('msg',function(e){
-		var to = getTarget(e.to)
-		if(to.length){
-			// 保存数据库，下次登录推送
-			async.waterfall([
-				function(cb){
-					connect(function(err,db){
-						cb(null,db)
+		// 保存数据库，下次登录推送
+		async.waterfall([
+			function(cb){
+				connect(function(err,db){
+					cb(null,db)
+				})
+			},
+			function(db,cb){
+				db.collection('users',function(err,users){
+					cb(null,err,users)
+				})
+			},
+			function(err,users,cb){
+				if(users){
+					users.findOne({'username': e.to},function(err,user){
+						cb(null,err)
 					})
-				},
-				function(db,cb){
-					db.collection('users',function(err,users){
-						cb(null,err,users)
-					})
-				},
-				function(err,users,cb){
-					if(users){
-						users.findOne({'username': e.to},function(err,user){
-							cb(null,err)
-						})
-					}
-				},
-				function(err,cb){
-					if(!err){
-						connect(function(err,db){
-							db.collection('msg').insert({
-								'from': socket.username,
-								'date': +new Date,
-								'msg': e.msg,
-								'to': e.to,
-								'read': false //已读
-							},function(err,ret){
-								cb(null,ret)
-							})	
-						})
-					}
 				}
-			],function(err,ret){
+			},
+			function(err,cb){
+				if(!err){
+					connect(function(err,db){
+						db.collection('msg').insert({
+							'from': socket.username,
+							'date': +new Date,
+							'msg': e.msg,
+							'to': e.to,
+							'read': false //已读
+						},function(err,ret){
+							cb(null,ret)
+						})	
+					})
+				}
+			}
+		],function(err,ret){
+			var to = getTarget(e.to)
+			if(to.length){
 				to.forEach(function(d){
 					getUser(socket.username,function(err,user){
 						if(!err){
@@ -88,8 +88,8 @@ io.on('connection',function(socket){
 					})
 					
 				})
-			})
-		}
+			}
+		})
 	}).on('disconnect',function(){
 		socket.leave(room)
 	})
