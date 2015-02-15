@@ -1,7 +1,8 @@
 var http = require('http'),
 	IO = require('socket.io'),
 	async = require('async'),
-	client = require('mongodb').MongoClient
+	client = require('mongodb').MongoClient,
+	ObjectID = require('mongodb').ObjectID
 
 
 var server = http.createServer(function(req,res){
@@ -38,6 +39,8 @@ io.on('connection',function(socket){
 		this.username = username
 	}).on('msg',function(e){
 		// 保存数据库，下次登录推送
+		// 无 id 发会话 insert
+		// 有 id 发回复 update 已存在的会话 ref
 		async.waterfall([
 			function(cb){
 				connect(function(err,db){
@@ -51,6 +54,7 @@ io.on('connection',function(socket){
 			},
 			function(err,users,cb){
 				if(users){
+					// todo 找过一次的用户不再找，cache
 					users.findOne({'username': e.to},function(err,user){
 						cb(null,err)
 					})
@@ -67,7 +71,7 @@ io.on('connection',function(socket){
 							'read': false //已读
 						},function(err,ret){
 							cb(null,ret)
-						})	
+						})
 					})
 				}
 			}

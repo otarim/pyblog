@@ -69,9 +69,9 @@
 				dataType: 'json',
 				success: function(data){
 					if(data.count){
-						mainPage.storeNotify(data)
 						mainPage.updateNotify(data.count)
 					}
+					mainPage.storeNotify(data)
 				}
 			})
 		}

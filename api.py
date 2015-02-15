@@ -174,7 +174,7 @@ class getMsg:
 	def GET(self):
 		if checkLogin():
 			user = web.cookies().get('pyname')
-			msgs = list(db['msg'].find({'to': user,'read': False},{'to': 0}))
+			msgs = list(db['msg'].find({'to': user,'read': False},{'to': 0}).sort('date',-1))
 			msgs = self.__transformUser(msgs)
 			web.header('Content-Type','application/json')
 			return json.dumps({
