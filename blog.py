@@ -3,6 +3,7 @@
 import web
 import hashlib
 import time
+import os
 from markdown import markdown
 from config import render,upload_path,app_root
 from conn import client
@@ -65,9 +66,7 @@ class redirect:
 
 class index:
 	def GET(self):
-		posts = []
-		for i in getPosts():
-			posts.append(i)
+		posts = list(getPosts())
 		return render.index({
 			'posts': posts
 		})
@@ -119,6 +118,10 @@ def getPosts():
 	# .sort('postDate')
 	# cannot set options after executing query
 	for i in posts:
+		if i['media']:
+			dirname = os.path.dirname(i['media'])
+			basename = os.path.basename(i['media'])
+			i['media'] = os.path.normpath(dirname + '/thumbs/'+basename)
 		artists.append(i['artist'])
 	artists = db['users'].find({'_id': {'$in': artists}})
 	return transformPosts(posts,listToHashByArtists(list(artists)))

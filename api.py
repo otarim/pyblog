@@ -143,7 +143,7 @@ class user:
 					setValue[i] = web.net.websafe(data[i])
 			if isinstance(data.avatar,types.InstanceType):
 				try:
-					setValue['avatar'] = upload(data.avatar,'/avatars/')
+					setValue['avatar'] = upload(data.avatar,'/avatars/',mediaType='avatar')
 				except:
 					return json.dumps({
 						'code': 500,
