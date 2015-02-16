@@ -3,29 +3,39 @@
 {% block content %}
 <main>
 <style>
+	.write-post input[type=text] {width: 100%;padding: .5em 1em;box-sizing: border-box;}
+	.write-content textarea {width: 100%;min-height: 250px;padding: 1em;box-sizing: border-box;}
+	.write-postBtn {text-align: right;}
+	.write-media {position: relative;cursor: pointer;z-index: 10;height: 36px;line-height: 36px;color: #fff;background: #8BC34A;text-align: center;border: 1px solid #60A113;}
+	/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
+	::-webkit-file-upload-button {cursor:pointer;}
+	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
+	.media-wrap {position: relative;display: inline-block;}
+	.media-wrap i {position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
+	.write-tags-inserted {font-size: 0;}
+	.write-tags-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;font-size: 14px;}
 	@media screen and (min-width:800px) {
-		/*input 元素不会继承 box-sizeing*/
-		.write-post input[type=text] {width: 100%;padding: .5em 1em;box-sizing: border-box;}
-		.write-content textarea {width: 100%;min-height: 250px;padding: 1em;box-sizing: border-box;}
-		.postBtn {width: 120px;letter-spacing: .5em;}
-		.write-postBtn {text-align: right;}
-		.write-media {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 36px;color: #fff;background: #8BC34A;text-align: center;border: 1px solid #60A113;}
+		.row {margin-bottom: 20px;}
+		.write-media {width: 100px;}
 		.write-media:hover {background: #60A113;}
-		::-webkit-file-upload-button {cursor:pointer;}
-		/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
-		.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
-		.media-wrap {position: relative;display: inline-block;}
-		.media-wrap i {display: none;position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
-		.media-wrap::after {content: '';position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;background: rgba(0,0,0,.7);transition: opacity linear .3s;}
+		.media-wrap i {display: none;}
+		.media-wrap::after {content: '';position: absolute;width: 100%;height: 100%;top: 0;left: 0;;background: rgba(0,0,0,.7);transition: opacity linear .3s;}
+		.media-wrap::after {opacity: 0}
 		.media-wrap:hover i {display: block;}
 		.media-wrap:hover::after {opacity: 1;}
-		.write-tags-inserted {font-size: 0;}
-		.write-tags-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;font-size: 14px;}
+		.postBtn {width: 120px;letter-spacing: .5em;}
 	}
 	.pop a {display: inline-block;vertical-align: middle;margin: 0 5px;}
-	.pop-c {padding: 20px;}
+	.pop-c {padding: 20px;text-align: center;}
 	.pop-ok {font-size: 20px;color: #FF1F26;}
 	.pop-cancle {font-size: 12px;color: #999;}
+	@media screen and (max-width: 800px) {
+		h1 {background: #673AB7;}
+		.row {margin-bottom: 10px;}
+		.write-post {margin: 10px;}
+		.write-media {width: 100%;}
+		.postBtn {width: 100%;}
+	}
 	
 </style>
 	<div class="write">
@@ -56,6 +66,7 @@
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
 	</div>
+	{% include 'block/footer.html' %}
 	</main>
 	{% macro pop(id) -%}
 	<template id="{{id}}">
@@ -142,8 +153,8 @@
 			}
 		})()
 		var tags = $('#tags')
-		$('.write-tag').on('keydown',function(e){
-			if(e.which === 9){
+		$('.write-tag').on('keypress',function(e){
+			if(e.which === 13){
 				e.preventDefault()
 				if(this.value !== ''){
 					var em = $('<em></em>')

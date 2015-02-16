@@ -33,6 +33,17 @@
 		.mainNav a:hover,.mainNav a.current {background: #111;}
 		.mainNav a:hover img,.mainNav a.current img {opacity: 1;}
 	}
+	@media screen and (max-width:800px) {
+		nav {position: absolute;left: 0;bottom: 0;height: 40px;right: 0;background: #333;z-index: 10;box-shadow: 0 2px 10px rgba(10,10,10,.5);font-size: 0;text-align: center;}
+		nav.show {left: 0;}
+		nav .msg {position: relative;}
+		nav .msg i {display: none;width: 16px;height: 16px;font-size: 12px;background: #E51C23;color: #fff;border-radius: 8px;text-align: center;line-height: 16px;top: 9px;right: 4px;position: absolute;font-style: normal;} 
+		.mainNav a {display: inline-block;width: 40px;height: 40px;text-align: center;margin: 0 5px;}
+		.mainNav a img {margin-top: 10px;opacity: .8;}
+		.mainNav a:hover,.mainNav a.current {background: #111;}
+		.mainNav a:hover img,.mainNav a.current img {opacity: 1;}
+		.notifys h5 {font-size: .18rem;text-align: center;}
+	}
 </style>
 <nav class="mainNav">
 	<a href="/" class="home current"><img src="/static/imgs/home.svg" alt="" width="20" height="20"></a>
@@ -72,6 +83,7 @@
 	</div>
 </template>
 {% endraw %}
+{% if Login %}
 <script>
 	define('mainPage',['Popbox','core','socket'],function(Popbox,ota,socket,exports){
 		var $ = ota.get,Popbox = Popbox.Popbox,ajax = ota.ajax,socket = socket.socket,
@@ -191,3 +203,4 @@
 		})
 	})
 </script>
+{% endif %}
