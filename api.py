@@ -33,8 +33,11 @@ class post:
 			artists = []
 			user = db['users'].find_one({'username': web.cookies().get('pyname')})
 			master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
-			master['follower'].append(user['_id'])
-			posts = list(db['posts'].find({'artist': {'$in': master['follower']}}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
+			follower = []
+			if master:
+				follower = master['follower']
+			follower.append(user['_id'])
+			posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
 			for i in posts:
 				i['_id'] = str(i['_id'])
 				artists.append(i['artist'])
@@ -46,7 +49,7 @@ class post:
 				'code': 200,
 				'page': int(query.page),
 				'pageNum': int(query.pageNum),
-				'total': db['posts'].find({'artist': {'$in': master['follower']}}).count(), #二次查询？
+				'total': db['posts'].find({'artist': {'$in': follower}}).count(), #二次查询？
 				'result': transformPosts(posts,listToHashByArtists(artists))
 			})
 		else:

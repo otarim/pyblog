@@ -128,8 +128,11 @@ def getPosts():
 	# turn the cursor into a list
 	user = db['users'].find_one({'username': web.cookies().get('pyname')})
 	master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
-	master['follower'].append(user['_id'])		
-	posts = list(db['posts'].find({'artist': {'$in': master['follower']}}).sort('postDate',-1).limit(5))
+	follower = []
+	if master:
+		follower = master['follower']
+	follower.append(user['_id'])		
+	posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(5))
 	# .sort('postDate')
 	# cannot set options after executing query
 	for i in posts:
