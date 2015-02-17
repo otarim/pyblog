@@ -6,6 +6,8 @@ import cgi
 import Image
 import os
 import os.path
+import random
+import string
 from sign import sign
 from config import upload_path,app_root
 
@@ -37,7 +39,10 @@ def upload(file,path='/',mediaType='pic'):
 		os.mkdir(upload_path+path+'/thumbs')
 	THUMBS_WIDTH = 500
 	pic_width = 1280
-	filename = file.filename.replace('\\','/').split('/')[-1]
+	# filename = file.filename.replace('\\','/').split('/')[-1]
+	# 随机名
+	extname = os.path.splitext(file.filename)[1]
+	filename = createRandomName() + extname
 	img = Image.open(file.file)
 	img_w,img_h = img.size
 	ratio = 1.0 * img_w / img_h
@@ -55,4 +60,8 @@ def upload(file,path='/',mediaType='pic'):
 def writeSession(arg):
 	for i in arg:
 		web.ctx.session[i] = arg[i]
+
+def createRandomName():
+	salt = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+	return salt
 
