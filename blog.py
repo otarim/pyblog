@@ -133,11 +133,14 @@ class editPost:
 		if checkLogin():
 			id = ObjectId(id)
 			post = db['posts'].find_one({'_id': id})
+			hasTag = True
+			if post['tags'] == '':
+				hasTag = False
 			if 'tags' in post:
 				post['tags'] = post['tags'].split(',')
 			return render.edit({
 				'post': post,
-				'hasTag': len(post['tags'])
+				'hasTag': hasTag
 			})
 
 def beforeReq():
