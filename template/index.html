@@ -65,6 +65,7 @@
 	</section>
 </script>
 {% endraw %}
+{% if Login %}
 <script>
 	require(['core'],function(ota){
 		var $ = ota.get,scrollTimmer,
@@ -128,4 +129,5 @@
 		})()
 	})
 </script>
+{% endif %}
 {% endblock %}

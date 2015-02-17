@@ -66,19 +66,25 @@ class redirect:
 
 class index:
 	def GET(self):
-		posts = list(getPosts())
-		return render.index({
-			'posts': posts
-		})
+		if checkLogin():
+			posts = list(getPosts())
+			return render.index({
+				'posts': posts
+			})
+		else:
+			return web.redirect('/u/login')
 
 class showPost:
 	def GET(self,id):
 		id = ObjectId(id)
 		post = db['posts'].find_one({'_id': id})
 		artist = db['users'].find_one({'_id': post['artist']})
+		user = db['users'].find_one({'username': web.cookies().get('pyname')})
+		hasRight = str(artist['_id']) == str(user['_id'])
 		post['artist'] = artist
 		return render.article({
-			'post': post
+			'post': post,
+			'hasRight': hasRight
 		})
 
 class showUser:
@@ -86,10 +92,15 @@ class showUser:
 		id = ObjectId(id)
 		artist = db['users'].find_one({'_id': id})
 		posts = list(db['posts'].find({'artist':id}).sort('postDate',-1))
+		isFollow = None
+		if checkLogin():
+			user = db['users'].find_one({'username': web.cookies().get('pyname')})
+			isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
 		return render.user({
 			'user': artist,
 			'posts': posts,
-			'count': len(posts)
+			'count': len(posts),
+			'isFollow': isFollow
 		})
 
 class getAllUsers:
@@ -112,9 +123,13 @@ class tag:
 
 #获取全部文章
 def getPosts():
+	# 获取所有关注者的文章
 	artists = []
 	# turn the cursor into a list
-	posts = list(db['posts'].find().sort('postDate',-1).limit(5))
+	user = db['users'].find_one({'username': web.cookies().get('pyname')})
+	master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
+	master['follower'].append(user['_id'])		
+	posts = list(db['posts'].find({'artist': {'$in': master['follower']}}).sort('postDate',-1).limit(5))
 	# .sort('postDate')
 	# cannot set options after executing query
 	for i in posts:
@@ -131,17 +146,23 @@ class editPost:
 	def GET(self,id):
 		# dict 无法用.访问？
 		if checkLogin():
+			# 如果文章属于作者？
 			id = ObjectId(id)
-			post = db['posts'].find_one({'_id': id})
+			user = web.cookies().get('pyname')
+			userId = db['users'].find_one({'username': user})
+			post = db['posts'].find_one({'_id': id,'artist': userId['_id']})
 			hasTag = True
-			if post['tags'] == '':
-				hasTag = False
-			if 'tags' in post:
-				post['tags'] = post['tags'].split(',')
-			return render.edit({
-				'post': post,
-				'hasTag': hasTag
-			})
+			if post:
+				if post['tags'] == '':
+					hasTag = False
+				if 'tags' in post:
+					post['tags'] = post['tags'].split(',')
+				return render.edit({
+					'post': post,
+					'hasTag': hasTag
+				})
+			else:
+				raise web.internalerror('你没有修改权限')
 
 def beforeReq():
 	render._lookup.globals.update(

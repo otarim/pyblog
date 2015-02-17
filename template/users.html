@@ -6,6 +6,11 @@
 	.user header {position: relative;margin-bottom: 10px;}
 	.user header img {border-radius: 60px;}
 	.user header i {position: absolute;}
+	@media screen and (max-width: 800px){
+		.users {padding: 10px;text-align: center;font-size: 0;}
+		.user {font-size: 12px;}
+		.user header i {width: 16px;height: 16px;text-align: center;line-height: 16px;background: #E91E63;border-radius: 8px;color: #fff;}
+	}
 </style>
 {% endblock %}
 {% block content %}

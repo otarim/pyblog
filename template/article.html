@@ -16,6 +16,7 @@
 		.post-banner {margin-bottom: 10px;}
 		aside {padding: 10px;}
 		.post-artist {font-weight: normal;}
+		.post-edit {font-size: 12px;padding: 0 5px;background: #E91E63;color: #fff;margin-left: 10px;}
 		.article-modify {font-size: 12px;}
 	}
 </style>
@@ -24,7 +25,7 @@
 	<main>
 		<article>
 			<header>
-				<h1>{{post.title}}</h1>
+				<h1>{{post.title}}{% if hasRight %}<a href="/post/edit/{{post._id}}" class="post-edit">编辑</a>{% endif %}</h1>
 				<p><em><a href="/users/{{post.artist._id}}" class="post-artist">{{post.artist.nickname}}</a></em>发表于<span class="post-time">{{post.postDate|datetimeformat()}}</span>
 				{% if post.tags %}
 				,包含标签: {{post.tags|wrapTags()}}

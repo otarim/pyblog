@@ -5,11 +5,13 @@
 	.user-info em {padding: 0 .2em;}
 	.rep h5 {margin-bottom: 10px;}
 	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
-		.rep p {text-align: right;}
+	.rep p {text-align: right;}
+	.user-follow,.user-follow:hover {text-decoration: none;}
 	@media screen and (min-width: 800px){
 		.user-info em {color: #E91E63;}
 		.rep {padding: 30px;width: 400px;height: 250px;}
 		.user-chat:hover {text-decoration: none;}
+		.user-nick .user-followed {color: #E91E63;}
 	}
 	@media screen and (max-width: 800px){
 		header h2 {display: none;}
@@ -25,6 +27,7 @@
 		.user-info em {color: #fff;}
 		.user-nick a {padding: 0 5px;display: inline-block;margin-right: 5px;background: #555;color: #fff;font-size: 12px;border-radius: 3px;}
 		.user-nick .user-chat {background: #3F51B5;}
+		.user-nick .user-followed {background: #E91E63;}
 		.user-details {display: none;}
 		.arts {padding: 10px;margin: 10px;box-shadow: 0 1px 16px rgba(0,0,0,.1);background: #fafafa;border: 1px solid silver;border-radius: 3px;}
 		.rep h5 {font-size: .24rem;text-align: center;}
@@ -41,7 +44,7 @@
 	<div class="user">
 		<p class="user-avatar-row"><img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150"></p>
 		{% if Login %}
-		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;">[未关注]</a></p>
+		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;" data-id="{{user._id}}" class="user-follow{% if isFollow %} user-followed{% endif %}">{% if isFollow %}[已关注]{% else %}[未关注]{% endif %}</a></p>
 		{% endif %}
 		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
 	</div>
@@ -76,7 +79,7 @@
 {% endraw %}
 <script>
 	require(['socket','mainPage','Popbox','core'],function(socket,mainPage,Popbox,ota){
-		var $ = ota.get,Popbox = Popbox.Popbox
+		var $ = ota.get,Popbox = Popbox.Popbox,ajax = ota.ajax
 			user = ota.getCookie('pyname')
 		var template = $('#rep').html()
 		Mustache.parse(template)
@@ -99,6 +102,29 @@
 					}
 				}).show()
 				$('.rep-c')[0].focus()
+			})
+			$('.user-follow').on('click',function(e){
+				e.preventDefault()
+				var id = $(this).data('id'),
+					self = $(this)
+				ajax({
+					url: '/api/follow',
+					type: 'post',
+					data: {
+						id: id
+					},
+					dataType: 'json',
+					success: function(d){
+						if(d.code === 200){
+							if(self.text() === '[未关注]'){
+								self.text('[已关注]')
+							}else{
+								self.text('[未关注]')
+							}
+							self.toggleClass('user-followed')
+						}
+					}
+				})
 			})
 		}
 	})

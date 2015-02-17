@@ -8,6 +8,8 @@ import os
 import os.path
 import random
 import string
+import time
+import hashlib
 from sign import sign
 from config import upload_path,app_root
 
@@ -63,6 +65,7 @@ def writeSession(arg):
 
 def createRandomName():
 	# http://tocode.sinaapp.com/4
-	salt = ''.join(random.sample(string.ascii_letters + string.digits, 8))
+	# hashlib.md5(str(time.time())).digest()
+	salt = ''.join(random.sample(string.ascii_letters + string.digits, 13))
 	return salt
 

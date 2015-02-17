@@ -22,28 +22,38 @@ urls = (
 	'/post/del', 'deletePost',
 	'/user','user',
 	'/msg', 'getMsg',
-	'/msg/read', 'changeMsgStatus'
+	'/msg/read', 'changeMsgStatus',
+	'/follow', 'follow'
 )
 
 class post:
 	def GET(self):
-		query = web.input(pageNum=10,page=1)
-		artists = []
-		posts = list(db['posts'].find().sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
-		for i in posts:
-			i['_id'] = str(i['_id'])
-			artists.append(i['artist'])
-		artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'regIp': 0,'lastLoginTime': 0}))
-		for i in artists:
-			i['_id'] = str(i['_id'])
-		web.header('Content-Type','application/json')
-		return json.dumps({
-			'code': 200,
-			'page': int(query.page),
-			'pageNum': int(query.pageNum),
-			'total': db['posts'].find().sort('postDate',-1).count(), #二次查询？
-			'result': transformPosts(posts,listToHashByArtists(artists))
-		})
+		if checkLogin():
+			query = web.input(pageNum=10,page=1)
+			artists = []
+			user = db['users'].find_one({'username': web.cookies().get('pyname')})
+			master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
+			master['follower'].append(user['_id'])
+			posts = list(db['posts'].find({'artist': {'$in': master['follower']}}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
+			for i in posts:
+				i['_id'] = str(i['_id'])
+				artists.append(i['artist'])
+			artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'regIp': 0,'lastLoginTime': 0}))
+			for i in artists:
+				i['_id'] = str(i['_id'])
+			web.header('Content-Type','application/json')
+			return json.dumps({
+				'code': 200,
+				'page': int(query.page),
+				'pageNum': int(query.pageNum),
+				'total': db['posts'].find({'artist': {'$in': master['follower']}}).count(), #二次查询？
+				'result': transformPosts(posts,listToHashByArtists(artists))
+			})
+		else:
+			return json.dumps({
+				'code': 500,
+				'msg': 'not access'
+			})
 	def POST(self):
 		if checkLogin():
 			data = web.input(file={},tags=[]) # 这什么鬼？！！！！！ 无 file={}报错。。擦
@@ -193,5 +203,36 @@ class changeMsgStatus:
 		db['msg'].update({'_id': ObjectId(data['id'])},{'$set': {
 			'read': True
 		}}) 
+
+class follow:
+	def GET(self):
+		pass
+	def POST(self):
+		if checkLogin():
+			data = web.input()
+			followerId = ObjectId(data.id)
+			userId = db['users'].find_one({'username': web.cookies().get('pyname')})['_id']
+			if db['follow'].find_one({'master': userId,'follower': {'$in': [followerId]}}):
+				db['follow'].update({
+					'master': userId
+				},{
+					'$pull': {
+						# 删除
+						'follower': followerId
+					}
+				})
+			else:
+				db['follow'].update({
+					'master': userId
+				},{
+					'$push': {
+						'follower': followerId
+					}
+				},True)
+				# upsert 如果文档不存在，那么创建，否则更新
+			return json.dumps({
+				'code': 200,
+				'msg': ''
+			})
 
 api = web.application(urls,locals())
