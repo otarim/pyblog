@@ -136,7 +136,8 @@ class editPost:
 			if 'tags' in post:
 				post['tags'] = post['tags'].split(',')
 			return render.edit({
-				'post': post
+				'post': post,
+				'hasTag': len(post['tags'])
 			})
 
 def beforeReq():

@@ -11,7 +11,7 @@ import string
 from sign import sign
 from config import upload_path,app_root
 
-cgi.maxlen = 2 * 1024 * 1024 #文件大小限制，需要 try except
+cgi.maxlen = 3 * 1024 * 1024 #文件大小限制，需要 try except
 
 def transformPosts(posts,artists):
 	for i in posts:
@@ -62,6 +62,7 @@ def writeSession(arg):
 		web.ctx.session[i] = arg[i]
 
 def createRandomName():
+	# http://tocode.sinaapp.com/4
 	salt = ''.join(random.sample(string.ascii_letters + string.digits, 8))
 	return salt
 

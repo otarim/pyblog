@@ -45,7 +45,7 @@
 			<div class="write-tags row">
 				<p class="row"><input type="text" class="write-tag" placeholder="文章标签,tab结束"></p>
 				<p id="tags" class="write-tags-inserted">
-					{% if post.tags %}
+					{% if hasTag %}
 					{% for i in post.tags %}
 					<em>{{i}}</em>
 					{% endfor %}
@@ -173,7 +173,7 @@
 			$(this).css({'background': getRandomColor()})
 		})
 		function bannerValidate(file,callback){
-			var reader = new FileReader,MAX_SIZE = 1024*5*1024
+			var reader = new FileReader,MAX_SIZE = 1024*3*1024
 			if(file.type.match('image')){
 				reader.onload = function(e){
 					if(e.total > MAX_SIZE){

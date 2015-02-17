@@ -1,19 +1,29 @@
 {% extends 'layout.html' %}
 {% block title %}tag{% endblock %}
+{% block header %}
+<style>
+	@media screen and (max-width: 800px){
+		h1 {background: #FF1F26;}
+		.result {padding: 10px;font-size: 14px;}
+	}
+</style>
+{% endblock %}
 {% block content %}
 <main>
 	{% if count %}
-	<h2>共匹配到{{count}}篇文章</h2>
-	<ul>
-	{% for post in posts%}
-		<li>
-			<a href="/posts/{{post._id}}">{{post.title}}</a>
-			<p>包含标签: {{post.tags|wrapTags()}}</p>
-		</li>
-	{% endfor %}
-	</ul>
+	<h1>共匹配到{{count}}篇文章</h1>
+	<div class="result">
+		<ul>
+		{% for post in posts%}
+			<li>
+				<a href="/posts/{{post._id}}">{{post.title}}</a>
+				<p>包含标签: {{post.tags|wrapTags()}}</p>
+			</li>
+		{% endfor %}
+		</ul>
+	</div>
 	{% else %}
-	<h2>什么也没找到...</h2>
+	<h1>什么也没找到...</h1>
 	{% endif %}
 </main>
 {% endblock %}

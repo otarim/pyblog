@@ -98,6 +98,20 @@
 				}
 			},500)
 		})
+		var fillZero = function(i){
+			if(i < 10){
+				return '0' + i
+			}
+			return i
+		}
+		var formatDate = function(d){
+			var t = new Date(d * 1e3)
+			var date = t.getFullYear() + '-' + fillZero(t.getMonth() + 1) + '-' + fillZero(t.getDate())
+			var time = ['getHours','getMinutes','getSeconds'].map(function(method){
+				return fillZero(t[method]())
+			}).join(':')
+			return date + ' ' + time
+		}
 		var handlerData = (function(){
 			var template = $('#template').html()
   			Mustache.parse(template)
@@ -105,7 +119,7 @@
 				data = data.result
 				var ret = []
 				data.forEach(function(d){
-					d.postDate = new Date(d.postDate*1e3).toLocaleString().replace(/\//g,'-')
+					d.postDate = formatDate(d.postDate)
 					ret.push(Mustache.render(template, {post: d}))
 				})
 				ret = ret.join('')

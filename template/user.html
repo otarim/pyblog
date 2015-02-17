@@ -2,11 +2,36 @@
 {% block title %}{{user.nickname}}的主页{% endblock %}
 {% block header %}
 <style>
-	.user-chat:hover {text-decoration: none;}
-	.rep {padding: 30px;width: 400px;height: 250px;}
+	.user-info em {padding: 0 .2em;}
 	.rep h5 {margin-bottom: 10px;}
 	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
-	.rep p {text-align: right;}
+		.rep p {text-align: right;}
+	@media screen and (min-width: 800px){
+		.user-info em {color: #E91E63;}
+		.rep {padding: 30px;width: 400px;height: 250px;}
+		.user-chat:hover {text-decoration: none;}
+	}
+	@media screen and (max-width: 800px){
+		header h2 {display: none;}
+		main h2 {font-size: .24rem;padding: 0 10px;border-left: 5px solid #3F51B5;margin-top: 5px;font-weight: normal;margin-left: -10px;}
+		.user {padding-top: 10px;background: #5677FC;}
+		.user h2 {font-size: 0;position: absolute;}
+		.user p {margin-bottom: 0;text-align: center;}
+		/*.user .edit-user {font-size: 14px;}*/
+		.user-avatar-row {position: relative;height: 100px;}
+		.user-avatar {position: absolute;top: 50%;left: 50%;-webkit-transform: translate(-50%,-50%);transform: translate(-50%,-50%);width: 80px;height: 80px;border-radius: 40px;border: 3px solid #fff;box-shadow: 0 0 5px rgba(10,10,10,.5);}
+		.user-info {background: #E91E63;padding: 10px;color: #fff;font-size: 12px;}
+		.user-nick {padding: 5px;font-size: 14px;}
+		.user-info em {color: #fff;}
+		.user-nick a {padding: 0 5px;display: inline-block;margin-right: 5px;background: #555;color: #fff;font-size: 12px;border-radius: 3px;}
+		.user-nick .user-chat {background: #3F51B5;}
+		.user-details {display: none;}
+		.arts {padding: 10px;margin: 10px;box-shadow: 0 1px 16px rgba(0,0,0,.1);background: #fafafa;border: 1px solid silver;border-radius: 3px;}
+		.rep h5 {font-size: .24rem;text-align: center;}
+		.rep {padding: 20px;}
+		.send {width: 100%;}
+
+	}
 </style>
 {% endblock %}
 {% block content %}
@@ -14,13 +39,14 @@
 <header>
 	<h2>这货是...</h2>
 	<div class="user">
-		<img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150">
+		<p class="user-avatar-row"><img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150"></p>
 		{% if Login %}
 		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;">[未关注]</a></p>
 		{% endif %}
 		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
 	</div>
 </header>
+<div class="arts">
 	{% if count %}
 	<h2>ta写过{{count}}篇文章</h2>
 	<ol>
@@ -31,6 +57,7 @@
 	{% else %}
 	<h2>ta什么也没留下</h2>
 	{% endif %}
+</div>
 	{% include 'block/footer.html' %}
 </main>
 {% endblock %}
