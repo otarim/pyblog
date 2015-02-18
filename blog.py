@@ -95,12 +95,31 @@ class showUser:
 		isFollow = None
 		if checkLogin():
 			user = db['users'].find_one({'username': web.cookies().get('pyname')})
-			isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
+			if user['_id'] == id:
+				me = isFollow = True
+			else:
+				me = False
+				isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
+			# 他关注的人
+			following = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0}) 
+			if following:
+				following = list(db['users'].find({'_id': {'$in': following['follower']}}))
+			else:
+				following = None
+			# 关注他的人
+			followers = db['follow'].find({'follower': {'$in': [id]}},{'master': 1,'_id': 0})
+			if followers.count():
+				followers = getArtistByKey(followers,'master')
+			else:
+				followers = None
 		return render.user({
 			'user': artist,
 			'posts': posts,
 			'count': len(posts),
-			'isFollow': isFollow
+			'isFollow': isFollow,
+			'me': me,
+			'following': following,
+			'followers': followers
 		})
 
 class getAllUsers:

@@ -12,8 +12,11 @@ import time
 import hashlib
 from sign import sign
 from config import upload_path,app_root
+from conn import client
 
 cgi.maxlen = 3 * 1024 * 1024 #文件大小限制，需要 try except
+
+db = client.pyblog
 
 def transformPosts(posts,artists):
 	for i in posts:
@@ -25,6 +28,13 @@ def listToHashByArtists(list):
 	for i in list:
 		hash[str(i['_id'])] = i
 	return hash
+
+def getArtistByKey(cursor,key):
+	collections = list(cursor)
+	ids = []
+	for i in collections:
+		ids.append(i[key])
+	return list(db['users'].find({'_id': {'$in': ids}}))
 
 #检测登录
 def checkLogin():

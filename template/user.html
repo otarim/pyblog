@@ -29,10 +29,12 @@
 		.user-nick .user-chat {background: #3F51B5;}
 		.user-nick .user-followed {background: #E91E63;}
 		.user-details {display: none;}
-		.arts {padding: 10px;margin: 10px;box-shadow: 0 1px 16px rgba(0,0,0,.1);background: #fafafa;border: 1px solid silver;border-radius: 3px;}
+		.arts,.follow,.like {padding: 10px;margin: 10px;box-shadow: 0 1px 16px rgba(0,0,0,.1);background: #fafafa;border: 1px solid silver;border-radius: 3px;}
 		.rep h5 {font-size: .24rem;text-align: center;}
 		.rep {padding: 20px;}
 		.send {width: 100%;}
+		.follow ul {list-style: none;font-size: 0;}
+		.follow li {display: inline-block;font-size: 12px;width: 70px;height: 70px;margin: 5px;text-align: center;overflow: hidden;}
 
 	}
 </style>
@@ -43,7 +45,7 @@
 	<h2>这货是...</h2>
 	<div class="user">
 		<p class="user-avatar-row"><img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150"></p>
-		{% if Login %}
+		{% if Login and not me %}
 		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;" data-id="{{user._id}}" class="user-follow{% if isFollow %} user-followed{% endif %}">{% if isFollow %}[已关注]{% else %}[未关注]{% endif %}</a></p>
 		{% endif %}
 		<p class="user-info">第<em>{{user.uid}}</em>号会员，加入于 {{user.regDate|datetimeformat('%Y-%m-%d')}}<br/>最近登录：{{user.lastLoginTime|datetimeformat()}}</p>
@@ -61,6 +63,43 @@
 	<h2>ta什么也没留下</h2>
 	{% endif %}
 </div>
+{% if isFollow %}
+<div class="follow">
+	<h2>ta关注的人</h2>
+	{% if following %}
+	<ul>
+		{% for artist in following %}
+		<li>
+			<a href="/users/{{artist._id}}">
+				<img src="{{artist.avatar}}" alt="" width="30" height="30">
+				<p>{{artist.nickname}}</p>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>ta没有关注的人</p>
+	{% endif %}
+	<h2>关注ta的人</h2>
+	{% if followers %}
+	<ul>
+		{% for artist in followers %}
+		<li>
+			<a href="/users/{{artist._id}}">
+				<img src="{{artist.avatar}}" alt="" width="30" height="30">
+				<p>{{artist.nickname}}</p>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>没人关注ta</p>
+	{% endif %}
+</div>
+<div class="like">
+	<h2>ta喜欢的</h2>
+</div>
+{% endif %}
 	{% include 'block/footer.html' %}
 </main>
 {% endblock %}
