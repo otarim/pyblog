@@ -19,26 +19,61 @@ urls = (
 	'/login', 'login',
 	'/logout', 'logout',
 	'/reg', 'reg',
-	'/msg', 'msg'
+	'/msg', 'msg',
+	'/regAccount', 'regAccount'
 )
 
 
 admin = web.application(urls,locals())
 
 #注册
-class reg:
+class regAccount:
 	def GET(self):
 		# if web.ctx.session.hasLogin:
 		# 	raise web.redirect('/')
 		# else:
-		return render.reg()
+		return render.regAccount()
 	def POST(self):
 		data = web.input()
-		# 检测
-		if db['users'].find_one({'username': data.username}):
-			# return None 
-			return '被注册了'
-		if data.username and data.password:
+		token = randomString()
+		email = data['username']
+		web.header('Content-Type','application/json')
+		if db['users'].find_one({'username': email}):
+			# 如果存在
+			return json.dumps({
+				'code': 500,
+				'msg': '账户已存在'
+			})
+		else:
+			db['regToken'].update({
+				'email': email
+			},{
+				'email': email,
+				'token': token
+			},True)
+			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://112.74.104.132:8080/u/reg?token='+token+'">http://112.74.104.132:8080/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
+			return json.dumps({
+				'code': 200,
+				'msg': '邮件已发出，请打开邮箱检查收件箱，如果收件箱找不到邮件，可能在垃圾邮件里面可以找到'
+			})
+
+
+class reg:
+	def GET(self):
+		data = web.input()
+		if 'token' in data:
+			result = db['regToken'].find_one({'token': data['token']})
+			if result:
+				username = result['email']
+				return render.reg({
+					'username': username
+				})
+			else:
+				return web.internalerror('非法操作')
+		
+	def POST(self):
+		data = web.input()
+		if data.password and data.repassword and data.password == data.repassword:
 			# 怎么搞？全局变量不能 from import?
 			# if not service.LOCK:
 			# 	service.LOCK = True
@@ -68,8 +103,9 @@ class reg:
 			})
 			web.setcookie('pyname',data.username,36000,path='/')
 			web.setcookie('pyconnect',sign(data.username),36000,path='/')
-			raise web.redirect('/0') 
-		
+			# 删除 token 表中的 document
+			db['regToken'].remove({'email': data['username']})
+			return web.redirect('/0') 
 
 # 登陆
 class login:
@@ -98,7 +134,7 @@ class login:
 					})
 					web.setcookie('pyname',data.username,36000,path='/')
 					web.setcookie('pyconnect',sign(data.username),36000,path='/')
-					raise web.redirect('/0')
+					return web.redirect('/0')
 				else:
 					return '密码错误'
 			else:
@@ -132,7 +168,7 @@ class dashboard:
 
 
 def getAvatar(email):
-	return 'http://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d='+web.net.urlquote('http://www2.warwick.ac.uk/services/sport/about-us/blank.jpg');
+	return 'http://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d=retro';
 
 
 # ObjectId(post_id) 查询 id

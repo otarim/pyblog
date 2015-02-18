@@ -14,11 +14,13 @@
 {% endblock %}
 {% block content %}
 <main>
-	<h1>欢迎加入</h1>
+	<h1>欢迎加入，{{username}}</h1>
 	<form action="/u/reg" method="post">
-		<p class="row"><input type="email" name="username" id="username" class="input-field" placeholder="邮箱"></p>
+		<p class="row">你的账户名是{{username}}</p>
+		<p class="row"><input type="hidden" name="username" id="username" class="input-field" value="{{username}}"></p>
 		<p class="row"><input type="text" name="nickname" id="nickname" class="input-field" placeholder="昵称"></p>
 		<p class="row"><input type="password" name="password" id="password" class="input-field" placeholder="密码"></p>
+		<p class="row"><input type="password" name="repassword" id="repassword" class="input-field" placeholder="确认密码"></p>
 		<p class="row">
 			<input type="submit" value="注册" class="regBtn">
 			<a href="/u/login" class="loginBtn">已有账号？</a>

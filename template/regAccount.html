@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block title %}欢迎加入{% endblock %}
+{% block header %}
+<style>
+	input.regBtn {background: #8BC34A;}
+	input.regBtn:hover {background: #9AD952;}
+	.msg {color: #9AD952;}
+	.error {color: #FF1F26;}
+	@media screen and (max-width: 800px) {
+		h1 {background: #E91E63;}
+		form {padding: 80px 10px 0;text-align: center;}
+		form input ,.regBtn{width: 100%;}
+		.regBtn {margin-top: 10px;margin-bottom: 10px;}
+	}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+	<h1>欢迎加入</h1>
+	<form action="/u/regAccount" method="post">
+		<p class="row msg" id="msg"></p>
+		<p class="row"><input type="email" name="username" id="username" class="input-field" placeholder="邮箱"></p>
+		<p class="row">
+			<input type="submit" value="发确认邮件" class="regBtn">
+			<a href="/u/login" class="loginBtn">已有账号？</a>
+		</p>
+	</form>	
+</main>
+{% endblock %}
+{% block footer %}
+<script>
+	require('core',function(ota){
+		var $ = ota.get,ajax = ota.ajax
+		$('form').on('submit',function(e){
+			if(!$('#username').val()){
+				$('#username')[0].focus()
+			}else{
+				ajax({
+					url: '/u/regAccount',
+					type: 'post',
+					data: {
+						'username': $('#username').val()
+					},
+					dataType: 'json',
+					success: function(d){
+						if(d.code === 500){
+							$('#msg').addClass('error')
+						}else{
+							$('#msg').removeClass('error')
+						}
+						$('#msg').text(d.msg)
+					}
+				})
+			}
+			return false
+		})
+	})
+</script>
+{% endblock %}

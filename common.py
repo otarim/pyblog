@@ -69,3 +69,6 @@ def createRandomName():
 	salt = ''.join(random.sample(string.ascii_letters + string.digits, 13))
 	return salt
 
+def randomString(num=16):
+	return ''.join(map(lambda xx:(hex(ord(xx))[2:]),os.urandom(num)))
+
