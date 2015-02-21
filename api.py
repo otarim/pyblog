@@ -59,7 +59,7 @@ class post:
 			})
 	def POST(self):
 		if checkLogin():
-			data = web.input(file={},tags=[]) # 这什么鬼？！！！！！ 无 file={}报错。。擦
+			data = web.input(file={},tags=[],captcha=None) # 这什么鬼？！！！！！ 无 file={}报错。。擦
 			fileurl = None
 			if isinstance(data.file,types.InstanceType):
 				try:
@@ -76,7 +76,8 @@ class post:
 				'content': web.net.websafe(data.content),
 				'media': fileurl,
 				'postDate': time.time(),
-				'tags': ','.join(data['tags'])
+				'tags': ','.join(data['tags']),
+				'captcha': web.net.websafe(data.captcha)
 			})
 			web.header('Content-Type','application/json')
 			return json.dumps({'code':200,'result': {
@@ -85,18 +86,20 @@ class post:
 				'title': web.net.websafe(data.title),
 				'content': markdown(web.net.websafe(data.content)),
 				'media': fileurl,
-				'tags': ','.join(data['tags'])
+				'tags': ','.join(data['tags']),
+				'captcha': web.net.websafe(data.captcha)
 			}})
 		else:
 			return '你他妈还没登陆啊'
 	def PUT(self):
 		if checkLogin():
-			data = web.input(file={},tags=[])
+			data = web.input(file={},tags=[],captcha=None)
 			mediaChanged = data.mediaChanged
 			setValue = {
 				'title': web.net.websafe(data.title),
 				'content': web.net.websafe(data.content),
 				'tags': ','.join(data['tags']),
+				'captcha': web.net.websafe(data.captcha),
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':

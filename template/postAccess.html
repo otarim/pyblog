@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block title %}验证码确认{% endblock %}
+{% block header %}
+<style>
+	.access {padding: 10px;text-align: center;}
+	.captcha {height: 38px;vertical-align: top;}
+</style>
+{% endblock %}
+{% block content %}
+<main>
+	<h1>请输入授权码</h1>
+	<div class="access">
+		<form action="" method="post">
+			<input type="text" name="captcha" class="captcha" id="captcha">
+			<input type="hidden" name="id" value="{{id}}">
+			<button class="btn">确认</button>
+		</form>	
+	</div>
+</main>
+{% endblock %}
+{% block footer %}
+{% endblock %}

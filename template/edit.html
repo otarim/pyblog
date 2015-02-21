@@ -63,6 +63,13 @@
 			<div class="write-content row">
 				<textarea name="content" id="content" placeholder="从这里开始">{{post.content}}</textarea>
 			</div>
+			<div class="write-captcha row">
+				{% if post.captcha %}
+				<input type="text" name="captcha" id="captcha" value="{{post.captcha}}" placeholder="验证码">
+				{% else %}
+				<input type="text" name="captcha" id="captcha" placeholder="验证码">
+				{% endif %}
+			</div>
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
 	</div>
@@ -118,7 +125,8 @@
 						tags: [].concat($('#tags em').html() || ''), // 多值处理
 						content: $('#content').val(),
 						file: $('#file')[0].files[0],
-						mediaChanged: $('#mediaChanged').val()
+						mediaChanged: $('#mediaChanged').val(),
+						captcha: $('#captcha').val()
 					},
 					traditional: true,
 					success: function(data){

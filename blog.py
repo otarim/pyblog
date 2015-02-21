@@ -25,7 +25,9 @@ urls = (
 	'/u', admin,
 	'/api',api,
 	'/tags/(.*)','tag',
-	'/post/edit/(.*)', 'editPost'
+	'/search', 'search',
+	'/post/edit/(.*)', 'editPost',
+	'/postAccess', 'postAccess'
 )
 
 render._lookup.globals.update(
@@ -76,16 +78,39 @@ class index:
 
 class showPost:
 	def GET(self,id):
-		id = ObjectId(id)
-		post = db['posts'].find_one({'_id': id})
-		artist = db['users'].find_one({'_id': post['artist']})
-		user = db['users'].find_one({'username': web.cookies().get('pyname')})
-		hasRight = str(artist['_id']) == str(user['_id'])
-		post['artist'] = artist
-		return render.article({
-			'post': post,
-			'hasRight': hasRight
+		if checkLogin():
+				data = web.input(captcha=None)
+				access = False
+				id = ObjectId(id)
+				post = db['posts'].find_one({'_id': id})
+				captcha = post.get('captcha')
+				if captcha:
+					# 如果存在验证码
+					if captcha != data.captcha:
+						# 如果验证码不等于输入验证码，跳转到授权页面
+						return web.redirect('/postAccess?id=' + str(post['_id']))
+				# 不存在验证码，或者验证码正确，直接访问
+				artist = db['users'].find_one({'_id': post['artist']})
+				user = db['users'].find_one({'username': web.cookies().get('pyname')})
+				hasRight = str(artist['_id']) == str(user['_id'])
+				post['artist'] = artist
+				return render.article({
+					'post': post,
+					'hasRight': hasRight
+				})
+
+class postAccess:
+	def GET(self):
+		data = web.input(id=None)
+		return render.postAccess({
+			'id': data.id
 		})
+	def POST(self):
+		# 根据 id 查找 id 对应的 captcha
+		data = web.input(id=None,captcha=None)
+		return web.redirect('/posts/' + data.id + '?captcha=' + data.captcha)
+
+
 
 class showUser:
 	def GET(self,id):
@@ -185,6 +210,12 @@ class editPost:
 				})
 			else:
 				raise web.internalerror('你没有修改权限')
+
+class search:
+	def GET(self):
+		return render.search()
+	def POST(self):
+		pass
 
 def beforeReq():
 	render._lookup.globals.update(

@@ -40,6 +40,9 @@
 		<div class="write-content row">
 			<textarea name="content" id="content" placeholder="从这里开始"></textarea>
 		</div>
+		<div class="write-captcha row">
+			<input type="text" name="captcha" id="captcha" placeholder="验证码">
+		</div>
 		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
 	</div>
 </div>
@@ -81,6 +84,7 @@
 						title: $('#title').val(),
 						tags: [].concat($('#tags em').html() || ''), // 多值处理
 						content: $('#content').val(),
+						captcha: $('#captcha').val(),
 						file: $('#file')[0].files[0]
 					},
 					traditional: true,
