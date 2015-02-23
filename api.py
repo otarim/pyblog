@@ -37,15 +37,13 @@ class post:
 			if master:
 				follower = master['follower']
 			follower.append(user['_id'])
-			posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
+			posts = list(db['posts'].find({'artist': {'$in': follower}},{'artist': 1,'captcha': 1,'title': 1,'postDate': 1,'media': 1}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
 			for i in posts:
 				if i.get('captcha'):
 					del(i['captcha'])
 					i['hasCaptcha'] = True
 					if 'media' in i:
 						i['media'] = True
-					if 'content' in i:
-						i['content'] = None
 				i['_id'] = str(i['_id'])
 				artists.append(i['artist'])
 			artists = list(db['users'].find({'_id': {'$in': artists}},{'password': 0,'loginIp': 0,'regIp': 0,'lastLoginTime': 0}))
