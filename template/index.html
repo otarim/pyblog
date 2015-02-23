@@ -66,18 +66,18 @@
 {% raw %}
 <script id="template" type="x-tmpl-mustache">
 	<section class="art">
-		{{#post.captcha}}
+		{{#post.hasCaptcha}}
 		{{#post.media}}
 		<div class="art-banner" style="background: #333 url(/static/imgs/lock.svg) no-repeat center center;"></div>
 		{{/post.media}}
 		<h2 class="art-lock"><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
-		{{/post.captcha}}
-		{{^post.captcha}}
+		{{/post.hasCaptcha}}
+		{{^post.hasCaptcha}}
 		{{#post.media}}
 		<div class="art-banner" style="background: url('{{{post.media}}}') no-repeat center center;background-size: cover;"></div>
 		{{/post.media}}
 		<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
-		{{/post.captcha}}
+		{{/post.hasCaptcha}}
 		<p>
 			<img src="{{post.artist.avatar}}" alt="" width="30" height="30" class="art-avatar">
 			<em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate}}</span>

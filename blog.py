@@ -114,42 +114,43 @@ class postAccess:
 
 class showUser:
 	def GET(self,id):
-		id = ObjectId(id)
-		artist = db['users'].find_one({'_id': id})
-		posts = list(db['posts'].find({'artist':id}).sort('postDate',-1))
-		isFollow = None
 		if checkLogin():
-			user = db['users'].find_one({'username': web.cookies().get('pyname')})
-			if user['_id'] == id:
-				me = isFollow = True
-			else:
-				me = False
-				isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
-			# 他关注的人
-			following = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0}) 
-			if following:
-				following = list(db['users'].find({'_id': {'$in': following['follower']}}))
-			else:
-				following = None
-			# 关注他的人
-			followers = db['follow'].find({'follower': {'$in': [id]}},{'master': 1,'_id': 0})
-			if followers.count():
-				followers = getArtistByKey(followers,'master')
-			else:
-				followers = None
-		return render.user({
-			'user': artist,
-			'posts': posts,
-			'count': len(posts),
-			'isFollow': isFollow,
-			'me': me,
-			'following': following,
-			'followers': followers
-		})
+			id = ObjectId(id)
+			artist = db['users'].find_one({'_id': id})
+			posts = list(db['posts'].find({'artist':id}).sort('postDate',-1))
+			isFollow = None
+			if checkLogin():
+				user = db['users'].find_one({'username': web.cookies().get('pyname')})
+				if user['_id'] == id:
+					me = isFollow = True
+				else:
+					me = False
+					isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
+				# 他关注的人
+				following = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0}) 
+				if following:
+					following = list(db['users'].find({'_id': {'$in': following['follower']}}))
+				else:
+					following = None
+				# 关注他的人
+				followers = db['follow'].find({'follower': {'$in': [id]}},{'master': 1,'_id': 0})
+				if followers.count():
+					followers = getArtistByKey(followers,'master')
+				else:
+					followers = None
+			return render.user({
+				'user': artist,
+				'posts': posts,
+				'count': len(posts),
+				'isFollow': isFollow,
+				'me': me,
+				'following': following,
+				'followers': followers
+			})
 
 class getAllUsers:
 	def GET(self):
-		if checkLogin:
+		if checkLogin():
 			users = list(db['users'].find({},{'_id': 1,'avatar':1,'uid':1,'nickname': 1,'sex': 1}).sort('uid',1))
 			return render.users({
 				'users': users
@@ -159,34 +160,36 @@ class getAllUsers:
 
 class tag:
 	def GET(self,tag):
-		posts = list(db['posts'].find({'tags':{'$regex':'('+tag+'$)|('+tag+',)'}}))
-		return render.tag({
-			'posts': posts,
-			'count': len(posts)
-		})
+		if checkLogin():
+			posts = list(db['posts'].find({'tags':{'$regex':'('+tag+'$)|('+tag+',)'}}))
+			return render.tag({
+				'posts': posts,
+				'count': len(posts)
+			})
 
 #获取全部文章
 def getPosts():
-	# 获取所有关注者的文章
-	artists = []
-	# turn the cursor into a list
-	user = db['users'].find_one({'username': web.cookies().get('pyname')})
-	master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
-	follower = []
-	if master:
-		follower = master['follower']
-	follower.append(user['_id'])		
-	posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(5))
-	# .sort('postDate')
-	# cannot set options after executing query
-	for i in posts:
-		if i['media']:
-			dirname = os.path.dirname(i['media'])
-			basename = os.path.basename(i['media'])
-			i['media'] = os.path.normpath(dirname + '/thumbs/'+basename)
-		artists.append(i['artist'])
-	artists = db['users'].find({'_id': {'$in': artists}})
-	return transformPosts(posts,listToHashByArtists(list(artists)))
+	if checkLogin():
+		# 获取所有关注者的文章
+		artists = []
+		# turn the cursor into a list
+		user = db['users'].find_one({'username': web.cookies().get('pyname')})
+		master = db['follow'].find_one({'master': user['_id']},{'follower': 1})
+		follower = []
+		if master:
+			follower = master['follower']
+		follower.append(user['_id'])		
+		posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(5))
+		# .sort('postDate')
+		# cannot set options after executing query
+		for i in posts:
+			if i['media']:
+				dirname = os.path.dirname(i['media'])
+				basename = os.path.basename(i['media'])
+				i['media'] = os.path.normpath(dirname + '/thumbs/'+basename)
+			artists.append(i['artist'])
+		artists = db['users'].find({'_id': {'$in': artists}})
+		return transformPosts(posts,listToHashByArtists(list(artists)))
 
 # 修改文章
 class editPost:
