@@ -42,7 +42,7 @@ class post:
 				if i.get('captcha'):
 					del(i['captcha'])
 					i['hasCaptcha'] = True
-					if 'media' in i:
+					if i.get('media'):
 						i['media'] = True
 				i['_id'] = str(i['_id'])
 				artists.append(i['artist'])
