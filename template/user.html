@@ -63,9 +63,24 @@
 	<h2>ta什么也没留下</h2>
 	{% endif %}
 </div>
-{% if isFollow %}
+{% if isFollow%}
+{% if not me %}
 <div class="follow">
 	<h2>共同关注的人</h2>
+	{% if sameFollowers %}
+	<ul>
+		{% for artist in sameFollowers %}
+		<li>
+			<a href="/users/{{artist._id}}">
+				<img src="{{artist.avatar}}" alt="" width="30" height="30">
+				<p>{{artist.nickname}}</p>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>没有共同关注的人</p>
+	{% endif %}
 	<!-- <h2>ta关注的人</h2>
 	{% if following %}
 	<ul>
@@ -97,6 +112,7 @@
 	<p>没人关注ta</p>
 	{% endif %} -->
 </div>
+{% endif %}
 <div class="like">
 	<h2>ta喜欢的</h2>
 </div>

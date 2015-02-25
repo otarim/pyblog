@@ -126,26 +126,41 @@ class showUser:
 				else:
 					me = False
 					isFollow = db['follow'].find_one({'master': user['_id'],'follower': {'$in': [id]}})
-				# 他关注的人
-				following = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0}) 
-				if following:
-					following = list(db['users'].find({'_id': {'$in': following['follower']}}))
+				# # 他关注的人
+				# following = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0}) 
+				# if following:
+				# 	following = list(db['users'].find({'_id': {'$in': following['follower']}}))
+				# else:
+				# 	following = None
+				# # 关注他的人
+				# followers = db['follow'].find({'follower': {'$in': [id]}},{'master': 1,'_id': 0})
+				# if followers.count():
+				# 	followers = getArtistByKey(followers,'master')
+				# else:
+				# 	followers = None
+				# 共同关注的人，set + intersection + list
+				if isFollow:
+					myFollowing = db['follow'].find_one({'master': user['_id']},{'follower': 1,'_id': 0})
+					otherFollowing = db['follow'].find_one({'master': id},{'follower': 1,'_id': 0})
+					if myFollowing and otherFollowing:
+						sameFollowers = list(set(myFollowing['follower']).intersection(set(otherFollowing['follower'])))
+						if sameFollowers:
+							sameFollowers = list(db['users'].find({'_id': {'$in': sameFollowers}}))
+						else:
+							sameFollowers = None
+					else:
+						sameFollowers = None
 				else:
-					following = None
-				# 关注他的人
-				followers = db['follow'].find({'follower': {'$in': [id]}},{'master': 1,'_id': 0})
-				if followers.count():
-					followers = getArtistByKey(followers,'master')
-				else:
-					followers = None
+					sameFollowers = None
 			return render.user({
 				'user': artist,
 				'posts': posts,
 				'count': len(posts),
 				'isFollow': isFollow,
 				'me': me,
-				'following': following,
-				'followers': followers
+				# 'following': following,
+				# 'followers': followers,
+				'sameFollowers': sameFollowers
 			})
 
 class getAllUsers:
