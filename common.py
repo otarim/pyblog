@@ -14,7 +14,7 @@ from sign import sign
 from config import upload_path,app_root
 from conn import client
 
-cgi.maxlen = 3 * 1024 * 1024 #文件大小限制，需要 try except
+cgi.maxlen = 5 * 1024 * 1024 #文件大小限制，需要 try except
 
 db = client.pyblog
 

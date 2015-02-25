@@ -129,7 +129,7 @@
 			$('.write-tag')[0].focus()
 		})
 		function bannerValidate(file,callback){
-			var reader = new FileReader,MAX_SIZE = 1024*3*1024
+			var reader = new FileReader,MAX_SIZE = 1024*5*1024
 			if(file.type.match('image')){
 				reader.onload = function(e){
 					if(e.total > MAX_SIZE){
