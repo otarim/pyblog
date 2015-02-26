@@ -7,6 +7,7 @@
 	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
 	.rep p {text-align: right;}
 	.user-follow,.user-follow:hover {text-decoration: none;}
+	.assign a {color: #A9A9A9;}
 	@media screen and (min-width: 800px){
 		.user-info em {color: #E91E63;}
 		.rep {padding: 30px;width: 400px;height: 250px;}
@@ -14,7 +15,7 @@
 		.user-nick .user-followed {color: #E91E63;}
 		.follow ul {list-style: none;font-size: 0;}
 		.follow li {display: inline-block;font-size: 12px;width: 80px;height: 80px;margin: 10px;overflow: hidden;text-align: center;}
-		.follow img {width: 50px;height: 50px}
+		.follow img {width: 50px;height: 50px;}
 	}
 	@media screen and (max-width: 800px){
 		header h2 {display: none;}
@@ -38,7 +39,7 @@
 		.send {width: 100%;}
 		.follow ul {list-style: none;font-size: 0;}
 		.follow li {display: inline-block;font-size: 12px;width: 70px;height: 70px;margin: 5px;text-align: center;overflow: hidden;}
-		.follow img {width: 30px;height: 30px}
+		.follow img {width: 30px;height: 30px;}
 	}
 </style>
 {% endblock %}
@@ -59,7 +60,13 @@
 	<h2>ta写过{{count}}篇文章</h2>
 	<ol>
 	{% for post in posts%}
+		{% if post.showPost %}
+		{% if post.assign %}
+		<li class="assign"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% else %}
 		<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% endif %}
+		{% endif %}
 	{% endfor %}
 	</ol>
 	{% else %}

@@ -5,8 +5,12 @@
 	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
 	.media-wrap {position: relative;display: inline-block;width: 100%;}
 	.media-wrap i {position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
-	.write-tags-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;}
+	.write-tags-inserted em,.write-assigns-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;}
 	.write-postBtn {text-align: right;}
+	.followList {display: none;}
+	.followList-show {display: block;}
+	.followList {margin: 0;list-style: none;}
+	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
 	@media screen and (min-width:800px) {
 		/*input 元素不会继承 box-sizeing*/
 		.postBtn {width: 120px;letter-spacing: .5em;}
@@ -43,6 +47,21 @@
 		<div class="write-captcha row">
 			<input type="text" name="captcha" id="captcha" placeholder="验证码">
 		</div>
+		{% if followers %}
+		<div class="write-assigns row">
+			<input type="text" name="assign" id="assign" placeholder="指定给 ta 看">
+			<ul class="followList">
+				{% for artist in followers %}
+				<li>
+					<a href="javascript:;" data-val="{{artist._id}}">
+						{{artist.nickname}}
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+			<p id="assigns" class="write-assigns-inserted"></p>
+		</div>
+		{% endif %}
 		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
 	</div>
 </div>
@@ -85,7 +104,8 @@
 						tags: [].concat($('#tags em').html() || ''), // 多值处理
 						content: $('#content').val(),
 						captcha: $('#captcha').val(),
-						file: $('#file')[0].files[0]
+						file: $('#file')[0].files[0],
+						assigns: getAssigns()
 					},
 					traditional: true,
 					success: function(data){
@@ -128,6 +148,26 @@
 			$(this).remove()
 			$('.write-tag')[0].focus()
 		})
+		{% if followers %}
+		var assigns = $('#assigns')
+		$('#assign').on('focus',function(e){
+			$('.followList').addClass('followList-show')
+		})
+		$('.followList').on('click','a',function(){
+			var val = $('#assigns em').text() || []
+				text = $(this).text().trim()
+			if(val.indexOf(text) == -1){
+				var em = $('<em></em>')
+				em.css({'background':getRandomColor()})
+				em.text(text)
+				em.data('val',$(this).data('val'))
+				assigns.append(em)
+			}
+		})
+		assigns.on('click','em',function(){
+			$(this).remove()
+		})
+		{% endif %}
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*5*1024
 			if(file.type.match('image')){
@@ -150,5 +190,12 @@
 				return color
 			}
 		})()
+		function getAssigns(){
+			var ret = []
+			$('#assigns em').each(function(){
+				ret.push($(this).data('val'))
+			})
+			return ret
+		}
 	})
 </script>

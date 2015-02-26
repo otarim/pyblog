@@ -51,7 +51,7 @@ class regAccount:
 				'email': email,
 				'token': token
 			},True)
-			web.sendmail('root@309.im.309.im', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://112.74.104.132:8080/u/reg?token='+token+'">http://112.74.104.132:8080/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
+			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://112.74.104.132:8080/u/reg?token='+token+'">http://112.74.104.132:8080/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
 			return json.dumps({
 				'code': 200,
 				'msg': '邮件已发出，请打开邮箱检查收件箱，如果收件箱找不到邮件，可能在垃圾邮件里面可以找到'
@@ -157,6 +157,10 @@ class dashboard:
 		if checkLogin():
 			artist = db['users'].find_one({'username': web.cookies().get('pyname')})
 			posts = list(db['posts'].find({'artist':artist['_id']}).sort('postDate',-1))
+			for i in posts:
+				if i.get('assigns'):
+					if artist['_id'] == i['artist'] or str(artist['_id']) in i.get('assigns'):
+						i['assign'] = True
 			# 我关注的人
 			following = db['follow'].find_one({'master': artist['_id']},{'follower': 1,'_id': 0}) 
 			if following:
@@ -177,9 +181,7 @@ class dashboard:
 				'followers': followers
 			})
 		else:
-			raise web.redirect('/login')
-
-
+			return web.redirect('/login')
 
 def getAvatar(email):
 	return 'http://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d=retro';

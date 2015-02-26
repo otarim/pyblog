@@ -70,8 +70,10 @@ class index:
 	def GET(self):
 		if checkLogin():
 			posts = list(getPosts())
+			userId = db['users'].find_one({'username': web.cookies().get('pyname')})['_id']
 			return render.index({
-				'posts': posts
+				'posts': posts,
+				'userId': userId
 			})
 		else:
 			return web.redirect('/u/login')
@@ -79,25 +81,31 @@ class index:
 class showPost:
 	def GET(self,id):
 		if checkLogin():
-				data = web.input(captcha=None)
-				access = False
-				id = ObjectId(id)
-				post = db['posts'].find_one({'_id': id})
-				captcha = post.get('captcha')
-				if captcha:
-					# 如果存在验证码
-					if captcha != data.captcha:
-						# 如果验证码不等于输入验证码，跳转到授权页面
-						return web.redirect('/postAccess?id=' + str(post['_id']))
-				# 不存在验证码，或者验证码正确，直接访问
-				artist = db['users'].find_one({'_id': post['artist']})
-				user = db['users'].find_one({'username': web.cookies().get('pyname')})
-				hasRight = str(artist['_id']) == str(user['_id'])
-				post['artist'] = artist
-				return render.article({
-					'post': post,
-					'hasRight': hasRight
-				})
+			data = web.input(captcha=None)
+			access = False
+			id = ObjectId(id)
+			post = db['posts'].find_one({'_id': id})
+			user = db['users'].find_one({'username': web.cookies().get('pyname')})
+			artist = db['users'].find_one({'_id': post['artist']})
+			hasRight = str(artist['_id']) == str(user['_id'])
+			post['artist'] = artist
+			captcha = post.get('captcha')
+			assigns = post.get('assigns')
+			if captcha:
+				# 如果存在验证码
+				if captcha != data.captcha:
+					# 如果验证码不等于输入验证码，跳转到授权页面
+					return web.redirect('/postAccess?id=' + str(post['_id']))
+			# 不存在验证码，或者验证码正确，直接访问
+			if assigns:
+				# 是否指定用户查看
+				if not hasRight and str(user['_id']) not in assigns:
+					# 有权限
+					return '你没有查看权限'
+			return render.article({
+				'post': post,
+				'hasRight': hasRight
+			})
 
 class postAccess:
 	def GET(self):
@@ -117,10 +125,18 @@ class showUser:
 		if checkLogin():
 			id = ObjectId(id)
 			artist = db['users'].find_one({'_id': id})
+			user = db['users'].find_one({'username': web.cookies().get('pyname')})
 			posts = list(db['posts'].find({'artist':id}).sort('postDate',-1))
+			for i in posts:
+				if i.get('assigns'):
+					if user['_id'] == i['artist'] or str(user['_id']) in i.get('assigns'):
+						i['showPost'] = i['assign'] = True
+					else:
+						i['showPost'] = False
+				else:
+					i['showPost'] = True
 			isFollow = None
 			if checkLogin():
-				user = db['users'].find_one({'username': web.cookies().get('pyname')})
 				if user['_id'] == id:
 					me = isFollow = True
 				else:
@@ -202,6 +218,13 @@ def getPosts():
 				dirname = os.path.dirname(i['media'])
 				basename = os.path.basename(i['media'])
 				i['media'] = os.path.normpath(dirname + '/thumbs/'+basename)
+			if i.get('assigns'):
+				if user['_id'] == i['artist'] or str(user['_id']) in i.get('assigns'):
+					i['showPost'] = i['assign'] = True
+				else:
+					i['showPost'] = False
+			else:
+				i['showPost'] = True
 			artists.append(i['artist'])
 		artists = db['users'].find({'_id': {'$in': artists}})
 		return transformPosts(posts,listToHashByArtists(list(artists)))
@@ -213,18 +236,34 @@ class editPost:
 		if checkLogin():
 			# 如果文章属于作者？
 			id = ObjectId(id)
-			user = web.cookies().get('pyname')
-			userId = db['users'].find_one({'username': user})
-			post = db['posts'].find_one({'_id': id,'artist': userId['_id']})
+			user = db['users'].find_one({'username': web.cookies().get('pyname')})
+			post = db['posts'].find_one({'_id': id,'artist': user['_id']})
 			hasTag = True
 			if post:
+				# 关注他的人
+				followers = db['follow'].find({'follower': {'$in': [user['_id']]}},{'master': 1,'_id': 0})
+				if followers.count():
+					followers = getArtistByKey(followers,'master')
+				else:
+					followers = None
 				if post['tags'] == '':
 					hasTag = False
 				if 'tags' in post:
 					post['tags'] = post['tags'].split(',')
+				if 'assigns' in post:
+					assignMap = {}
+					for i in post['assigns']:
+						for j in followers:
+							if str(j['_id']) == i:
+								assignMap[str(i)] = j['nickname']
+								break
+				else:
+					assignMap = None
 				return render.edit({
 					'post': post,
-					'hasTag': hasTag
+					'hasTag': hasTag,
+					'followers': followers,
+					'assignMap': assignMap
 				})
 			else:
 				raise web.internalerror('你没有修改权限')

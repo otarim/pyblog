@@ -10,6 +10,8 @@
 		background: url(/static/imgs/lock_black.svg) no-repeat 5px center;
 		padding-left: 30px;
 	}
+	.art-asign h2 a {color: #A9A9A9;}
+	.art-asign h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;}
 	@media screen and (min-width:800px) {
 		.arts {min-height: 500px;}
 		.art {margin-bottom: 20px;}
@@ -39,7 +41,12 @@
 	<h1>最新创作</h1>
 	<div class="arts">
 		{% for post in posts %}
+		{% if post.showPost %}
+		{% if post.assign %}
+		<section class="art art-asign">
+		{% else %}
 		<section class="art">
+		{% endif %}
 			{% if post.captcha %}
 			{% if post.media %}
 			<div class="art-banner" style="background: #333 url(/static/imgs/lock.svg) no-repeat center center;"></div>
@@ -56,6 +63,7 @@
 				<em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate|datetimeformat()}}</span>
 			</p>
 		</section>
+		{% endif %}
 		{% endfor %}
 	</div>
 	{% include 'block/footer.html' %}
@@ -65,7 +73,12 @@
 {% block footer %}
 {% raw %}
 <script id="template" type="x-tmpl-mustache">
+	{{#post.assign}}
+	<section class="art art-asign">
+	{{/post.assign}}
+	{{^post.assign}}
 	<section class="art">
+	{{/post.assign}}
 		{{#post.hasCaptcha}}
 		{{#post.media}}
 		<div class="art-banner" style="background: #333 url(/static/imgs/lock.svg) no-repeat center center;"></div>

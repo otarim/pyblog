@@ -37,8 +37,15 @@ class post:
 			if master:
 				follower = master['follower']
 			follower.append(user['_id'])
-			posts = list(db['posts'].find({'artist': {'$in': follower}},{'artist': 1,'captcha': 1,'title': 1,'postDate': 1,'media': 1}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
+			posts = list(db['posts'].find({'artist': {'$in': follower}},{'artist': 1,'captcha': 1,'title': 1,'postDate': 1,'media': 1,'assigns': 1}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
+			posts_remove = []
 			for i in posts:
+				if i.get('assigns'):
+					if user['_id'] != i['artist'] and str(user['_id']) not in i.get('assigns'):
+						posts_remove.append(i)
+						continue
+					del(i['assigns'])
+					i['assign'] = True
 				if i.get('captcha'):
 					del(i['captcha'])
 					i['hasCaptcha'] = True
@@ -50,6 +57,8 @@ class post:
 			for i in artists:
 				i['_id'] = str(i['_id'])
 			web.header('Content-Type','application/json')
+			for i in posts_remove:
+				posts.remove(i)
 			return json.dumps({
 				'code': 200,
 				'page': int(query.page),
@@ -64,7 +73,7 @@ class post:
 			})
 	def POST(self):
 		if checkLogin():
-			data = web.input(file={},tags=[],captcha=None) # 这什么鬼？！！！！！ 无 file={}报错。。擦
+			data = web.input(file={},tags=[],assigns=[],captcha=None) # 这什么鬼？！！！！！ 无 file={}报错。。擦
 			fileurl = None
 			if isinstance(data.file,types.InstanceType):
 				try:
@@ -82,7 +91,8 @@ class post:
 				'media': fileurl,
 				'postDate': time.time(),
 				'tags': ','.join(data['tags']),
-				'captcha': web.net.websafe(data.captcha)
+				'captcha': web.net.websafe(data.captcha),
+				'assigns': data.assigns
 			})
 			web.header('Content-Type','application/json')
 			return json.dumps({'code':200,'result': {
@@ -92,19 +102,21 @@ class post:
 				'content': markdown(web.net.websafe(data.content)),
 				'media': fileurl,
 				'tags': ','.join(data['tags']),
-				'captcha': web.net.websafe(data.captcha)
+				'captcha': web.net.websafe(data.captcha),
+				'assigns': data.assigns
 			}})
 		else:
 			return '你他妈还没登陆啊'
 	def PUT(self):
 		if checkLogin():
-			data = web.input(file={},tags=[],captcha=None)
+			data = web.input(file={},tags=[],assigns=[],captcha=None)
 			mediaChanged = data.mediaChanged
 			setValue = {
 				'title': web.net.websafe(data.title),
 				'content': web.net.websafe(data.content),
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
+				'assigns': data.assigns,
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':

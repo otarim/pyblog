@@ -12,8 +12,13 @@
 	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
 	.media-wrap {position: relative;display: inline-block;}
 	.media-wrap i {position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
-	.write-tags-inserted {font-size: 0;}
-	.write-tags-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;font-size: 14px;}
+	.write-tags-inserted,.write-assigns-inserted {font-size: 0;}
+	.write-tags-inserted em,.write-assigns-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;font-size: 14px;}
+	.followList {display: none;}
+	.followList-show {display: block;}
+	.followList {margin: 0;list-style: none;}
+	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
+	.write-assigns-inserted {margin-top: 10px;}
 	@media screen and (min-width:800px) {
 		.row {margin-bottom: 20px;}
 		.write-media {width: 100px;}
@@ -69,6 +74,25 @@
 				{% else %}
 				<input type="text" name="captcha" id="captcha" placeholder="验证码">
 				{% endif %}
+			</div>
+			<div class="write-assigns row">
+				<input type="text" name="assign" id="assign" placeholder="指定给 ta 看">
+				<ul class="followList">
+					{% for artist in followers %}
+					<li>
+						<a href="javascript:;" data-val="{{artist._id}}">
+							{{artist.nickname}}
+						</a>
+					</li>
+					{% endfor %}
+				</ul>
+				<p id="assigns" class="write-assigns-inserted">
+					{% if post.assigns%}
+					{% for assign in post.assigns -%}
+					<em data-val="{{assign}}">{{assignMap[assign]}}</em>
+					{%- endfor %}
+					{% endif %}
+				</p>
 			</div>
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
@@ -126,7 +150,8 @@
 						content: $('#content').val(),
 						file: $('#file')[0].files[0],
 						mediaChanged: $('#mediaChanged').val(),
-						captcha: $('#captcha').val()
+						captcha: $('#captcha').val(),
+						assigns: getAssigns()
 					},
 					traditional: true,
 					success: function(data){
@@ -138,11 +163,6 @@
 						setTimeout(function(){
 							pop.remove()
 						},1000)
-						// $('.write input[type=text]').val('')
-						// $('#tags').html('')
-						// $('#file').val('')
-						// $('#content').val('')
-						// $('.write-media-inserted').html('')
 					}
 				})
 			}
@@ -180,6 +200,29 @@
 		$('#tags em').each(function(index){
 			$(this).css({'background': getRandomColor()})
 		})
+		{% if followers %}
+		var assigns = $('#assigns')
+		$('#assign').on('focus',function(e){
+			$('.followList').addClass('followList-show')
+		})
+		$('.followList').on('click','a',function(){
+			var val = $('#assigns em').text() || []
+				text = $(this).text().trim()
+			if(val.indexOf(text) == -1){
+				var em = $('<em></em>')
+				em.css({'background':getRandomColor()})
+				em.text(text)
+				em.data('val',$(this).data('val'))
+				assigns.append(em)
+			}
+		})
+		assigns.on('click','em',function(){
+			$(this).remove()
+		})
+		$('#assigns em').each(function(index){
+			$(this).css({'background': getRandomColor()})
+		})
+		{% endif %}
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*3*1024
 			if(file.type.match('image')){
@@ -193,6 +236,13 @@
 			}else{
 				return callback('图片格式有误',null)
 			}
+		}
+		function getAssigns(){
+			var ret = []
+			$('#assigns em').each(function(){
+				ret.push($(this).data('val'))
+			})
+			return ret
 		}
 	})
 </script>
