@@ -55,7 +55,7 @@
 	}
 </style>
 <nav class="mainNav">
-	<a href="/" class="home current"><img src="/static/imgs/home.svg" alt="" width="20" height="20"></a>
+	<a href="/" class="home"><img src="/static/imgs/home.svg" alt="" width="20" height="20"></a>
 	<a href="/u/0" class="admin"><img src="/static/imgs/account-circle.svg" alt="" width="20" height="20"></a>
 	{% if Login %}
 	<a href="javascript:;" class="msg"><img src="/static/imgs/msg.svg" alt="" width="20" height="20"><i></i></a>
@@ -215,6 +215,8 @@
 		msg.on('click',function(e){
 			renderNotify()
 		})
+		// highlight
+		$('.mainNav a[href="'+location.pathname+'"]').addClass('current')
 	})
 </script>
 {% endif %}

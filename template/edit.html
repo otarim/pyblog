@@ -111,6 +111,9 @@
 	{% call pop('popA') %}
 	    修改成功
 	{% endcall %}
+	{% call pop('popB') %}
+    	秋刀马爹，发布中...
+	{% endcall %}
 	<input type="hidden" name="postId" value="{{post._id}}" id="postId">
 	<input type="hidden" name="mediaChanged" value="false" id="mediaChanged">
 {% endblock %}
@@ -125,6 +128,7 @@
 		var $ = ota.get,
 			ajax = ota.ajax,
 			Popbox = Popbox.Popbox
+		var pop = new Popbox
 		$('#file').on('change',function(e){
 			var file = this.files[0],self = this
 			bannerValidate(file,function(err,ret){
@@ -139,6 +143,9 @@
 		})
 		$('.postBtn').on('click',function(){
 			if($('#title').val() && $('#content').val()){
+				pop.reDraw(function(el){
+					return $('#popB').html()
+				}).show()
 				ajax({
 					url: '/api/post',
 					type: 'put',
@@ -155,10 +162,8 @@
 					},
 					traditional: true,
 					success: function(data){
-						var pop = new Popbox({
-							el: function(){
-								return $('#popA').html()
-							}
+						pop.reDraw(function(el){
+							return $('#popA').html()
 						}).show()
 						setTimeout(function(){
 							pop.remove()

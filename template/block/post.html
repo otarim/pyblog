@@ -77,11 +77,15 @@
 {% call pop('popA') %}
     发布成功
 {% endcall %}
+{% call pop('popB') %}
+    秋刀马爹，发布中...
+{% endcall %}
 <script>
 	define('postData',['core','Popbox','arts'],function(ota,Popbox,arts,exports){
 		var $ = ota.get,
 			ajax = ota.ajax,
 			Popbox = Popbox.Popbox
+		var pop = new Popbox
 		$('#file').on('change',function(e){
 			var file = this.files[0],self = this
 			bannerValidate(file,function(err,ret){
@@ -95,6 +99,9 @@
 		})
 		$('.postBtn').on('click',function(){
 			if($('#title').val() && $('#content').val()){
+				pop.reDraw(function(el){
+					return $('#popB').html()
+				}).show()
 				ajax({
 					url: '/api/post',
 					type: 'post',
@@ -110,10 +117,8 @@
 					traditional: true,
 					success: function(data){
 						arts.renderPost(data.result)
-						var pop = new Popbox({
-							el: function(){
-								return $('#popA').html()
-							}
+						pop.reDraw(function(el){
+							return $('#popA').html()
 						}).show()
 						setTimeout(function(){
 							pop.remove()
