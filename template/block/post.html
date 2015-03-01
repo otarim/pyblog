@@ -80,12 +80,14 @@
 {% call pop('popB') %}
     秋刀马爹，发布中...
 {% endcall %}
+{% call pop('popC') %}
+    标题或者内容不能为空
+{% endcall %}
 <script>
 	define('postData',['core','Popbox','arts'],function(ota,Popbox,arts,exports){
 		var $ = ota.get,
 			ajax = ota.ajax,
 			Popbox = Popbox.Popbox
-		var pop = new Popbox
 		$('#file').on('change',function(e){
 			var file = this.files[0],self = this
 			bannerValidate(file,function(err,ret){
@@ -99,7 +101,8 @@
 		})
 		$('.postBtn').on('click',function(){
 			if($('#title').val() && $('#content').val()){
-				pop.reDraw(function(el){
+				var popA = new Popbox
+				popA.reDraw(function(el){
 					return $('#popB').html()
 				}).show()
 				ajax({
@@ -116,13 +119,16 @@
 					},
 					traditional: true,
 					success: function(data){
-						arts.renderPost(data.result)
-						pop.reDraw(function(el){
-							return $('#popA').html()
-						}).show()
 						setTimeout(function(){
-							pop.remove()
-						},1000)
+							popA.reDraw(function(el){
+								return $('#popA').html()
+							}).show()
+							setTimeout(function(){
+								popA.remove()
+							},1000)
+						},200)
+						arts.renderPost(data.result)
+						
 						$('.write input[type=text]').val('')
 						$('#tags').html('')
 						$('#file').val('')
@@ -130,6 +136,10 @@
 						$('.write-media-inserted').html('')
 					}
 				})
+			}else{
+				(new Popbox).reDraw(function(){
+					return $('#popC').html()
+				}).show()
 			}
 		})
 		$('.write-media-inserted').on('click','.media-wrap i',function(e){

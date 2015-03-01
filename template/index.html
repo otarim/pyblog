@@ -106,7 +106,7 @@
 			ajaxLock = false,
 			page = 1,pageNum = 5,maxPage
 		handler = 'touchend' in document ? 'touchend' : 'scroll'
-		$('main').on(handler,function(){
+		$('main').on(handler,function(e){
 			var self = this
 			clearTimeout(scrollTimmer)
 			scrollTimmer = setTimeout(function(){

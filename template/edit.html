@@ -114,6 +114,9 @@
 	{% call pop('popB') %}
     	秋刀马爹，发布中...
 	{% endcall %}
+	{% call pop('popC') %}
+    	标题或者内容不能为空
+	{% endcall %}
 	<input type="hidden" name="postId" value="{{post._id}}" id="postId">
 	<input type="hidden" name="mediaChanged" value="false" id="mediaChanged">
 {% endblock %}
@@ -128,7 +131,6 @@
 		var $ = ota.get,
 			ajax = ota.ajax,
 			Popbox = Popbox.Popbox
-		var pop = new Popbox
 		$('#file').on('change',function(e){
 			var file = this.files[0],self = this
 			bannerValidate(file,function(err,ret){
@@ -143,7 +145,8 @@
 		})
 		$('.postBtn').on('click',function(){
 			if($('#title').val() && $('#content').val()){
-				pop.reDraw(function(el){
+				var popA = new Popbox
+				popA.reDraw(function(el){
 					return $('#popB').html()
 				}).show()
 				ajax({
@@ -162,14 +165,20 @@
 					},
 					traditional: true,
 					success: function(data){
-						pop.reDraw(function(el){
-							return $('#popA').html()
-						}).show()
 						setTimeout(function(){
-							pop.remove()
-						},1000)
+							popA.reDraw(function(el){
+								return $('#popA').html()
+							}).show()
+							setTimeout(function(){
+								popA.remove()
+							},1000)
+						},200)
 					}
 				})
+			}else{
+				(new Popbox).reDraw(function(){
+					return $('#popC').html()
+				}).show()
 			}
 		})
 		$('.write-media-inserted').on('click','.media-wrap i',function(e){
