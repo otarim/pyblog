@@ -101,11 +101,13 @@ class showPost:
 				# 是否指定用户查看
 				if not hasRight and str(user['_id']) not in assigns:
 					# 有权限
-					return '你没有查看权限'
+					raise web.internalerror('你没有修改权限')
 			return render.article({
 				'post': post,
 				'hasRight': hasRight
 			})
+		else:
+			return web.redirect('/u/login')
 
 class postAccess:
 	def GET(self):
@@ -178,6 +180,8 @@ class showUser:
 				# 'followers': followers,
 				'sameFollowers': sameFollowers
 			})
+		else:
+			return web.redirect('/u/login')
 
 class getAllUsers:
 	def GET(self):
@@ -197,6 +201,8 @@ class tag:
 				'posts': posts,
 				'count': len(posts)
 			})
+		else:
+			return web.redirect('/u/login')
 
 #获取全部文章
 def getPosts():
@@ -267,6 +273,8 @@ class editPost:
 				})
 			else:
 				raise web.internalerror('你没有修改权限')
+		else:
+			return web.redirect('/u/login')
 
 class search:
 	def GET(self):
