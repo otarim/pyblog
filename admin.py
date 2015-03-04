@@ -74,18 +74,9 @@ class reg:
 	def POST(self):
 		data = web.input()
 		if data.password and data.repassword and data.password == data.repassword:
-			# 怎么搞？全局变量不能 from import?
-			# if not service.LOCK:
-			# 	service.LOCK = True
-			# r+ 使用r+ 模式不会先清空，但是会替换掉原先的文件
-			# w+ 消除文件内容，然后以读写方式打开文件。
-			# r+ 先读取，然后 write 可以实现 append 操作
-			fout = open(app_root+'/uid','r')
-			uid = int(fout.read()) + 1
-			fout.close()
-			fout = open(app_root+'/uid','w')
-			fout.write(str(uid))
-			fout.close()
+			# 锁的问题有点操蛋。。。还是用 mongod 维护多一个表存储自增 id 吧
+			# findAndModify 会锁定表
+			uid = db['ids'].find_and_modify(query={'name':'user'},update={'$inc':{'id':1}},new=True)['id']
 			db['users'].insert({
 				'uid': uid,
 				'username': data.username,
@@ -184,7 +175,7 @@ class dashboard:
 			return web.redirect('/login')
 
 def getAvatar(email):
-	return 'http://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d=retro';
+	return 'https://cdn.v2ex.com/gravatar/'+hashlib.md5(email).hexdigest() +'?d=retro';
 
 
 # ObjectId(post_id) 查询 id

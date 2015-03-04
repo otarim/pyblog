@@ -27,7 +27,8 @@ urls = (
 	'/tags/(.*)','tag',
 	'/search', 'search',
 	'/post/edit/(.*)', 'editPost',
-	'/postAccess', 'postAccess'
+	'/postAccess', 'postAccess',
+	'/install', 'install'
 )
 
 render._lookup.globals.update(
@@ -281,6 +282,24 @@ class search:
 		return render.search()
 	def POST(self):
 		pass
+
+class install:
+	def GET(self):
+		# 创建 webSession 目录，创建 upload 目录，创建 avatars 目录
+		# 初始化 ids 表
+		# 删除 install 
+		if not os.path.exists(os.path.join(app_root,'lock')):
+			if not os.path.exists(os.path.join(app_root,'static/upload')):
+				os.mkdir(os.path.join(app_root,'static/upload'))
+				os.mkdir(os.path.join(app_root,'static/upload/avatars'))
+			if not os.path.exists(os.path.join(app_root,'webSession')):
+				os.mkdir(os.path.join(app_root,'webSession'))
+			db['ids'].save({'name':'user','id':db['users'].find().count()})
+			# 生成 lock 文件
+			f = open(os.path.join(app_root,'lock'),'w')
+			f.close()
+			return '安装完毕'
+
 
 def beforeReq():
 	render._lookup.globals.update(

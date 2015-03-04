@@ -11,6 +11,8 @@
 	.followList-show {display: block;}
 	.followList {margin: 0;list-style: none;}
 	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
+	.write-private input[type=checkbox] {margin-right: 10px;}
+	input[type=text][disabled] {cursor: not-allowed;}
 	@media screen and (min-width:800px) {
 		/*input 元素不会继承 box-sizeing*/
 		.postBtn {width: 120px;letter-spacing: .5em;}
@@ -62,6 +64,9 @@
 			<p id="assigns" class="write-assigns-inserted"></p>
 		</div>
 		{% endif %}
+		<div class="write-private row">
+			<input type="checkbox" name="private" id="private">仅自己可见
+		</div>
 		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
 	</div>
 </div>
@@ -115,7 +120,8 @@
 						content: $('#content').val(),
 						captcha: $('#captcha').val(),
 						file: $('#file')[0].files[0],
-						assigns: getAssigns()
+						assigns: getAssigns(),
+						private: $('#private')[0].checked
 					},
 					traditional: true,
 					success: function(data){
@@ -182,6 +188,13 @@
 			$(this).remove()
 		})
 		{% endif %}
+		$('#private').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*5*1024
 			if(file.type.match('image')){
