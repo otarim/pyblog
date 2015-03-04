@@ -75,6 +75,7 @@
 				<input type="text" name="captcha" id="captcha" placeholder="验证码">
 				{% endif %}
 			</div>
+			{% if followers %}
 			<div class="write-assigns row">
 				<input type="text" name="assign" id="assign" placeholder="指定给 ta 看">
 				<ul class="followList">
@@ -94,6 +95,7 @@
 					{% endif %}
 				</p>
 			</div>
+			{% endif %}
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
 	</div>
