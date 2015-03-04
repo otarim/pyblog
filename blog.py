@@ -33,7 +33,8 @@ urls = (
 
 render._lookup.globals.update(
 	ROOT = app_root,
-	IP = get_my_ip()
+	IP = get_my_ip(),
+	HOSTNAME = webConfig['hostname']
 )
 
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
