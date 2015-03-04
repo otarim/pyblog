@@ -5,7 +5,7 @@ import hashlib
 import time
 import os
 from markdown import markdown
-from config import render,upload_path,app_root
+from config import render,upload_path,app_root,webConfig
 from conn import client
 from admin import admin
 from api import api
@@ -32,7 +32,8 @@ urls = (
 )
 
 render._lookup.globals.update(
-	ROOT = app_root
+	ROOT = app_root,
+	IP = get_my_ip()
 )
 
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):

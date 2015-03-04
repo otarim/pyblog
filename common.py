@@ -10,6 +10,7 @@ import random
 import string
 import time
 import hashlib
+import socket
 from sign import sign
 from config import upload_path,app_root
 from conn import client
@@ -81,4 +82,14 @@ def createRandomName():
 
 def randomString(num=16):
 	return ''.join(map(lambda xx:(hex(ord(xx))[2:]),os.urandom(num)))
+
+def get_my_ip():
+    try:
+        csock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        csock.connect(('8.8.8.8', 80))
+        (addr, port) = csock.getsockname()
+        csock.close()
+        return addr
+    except socket.error:
+        return "127.0.0.1"
 

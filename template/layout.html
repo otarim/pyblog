@@ -46,7 +46,7 @@
 	<script src="/static/js/socket.io.js"></script>
 	<script>
 		define('socket',function(exports){
-			var socket = io.connect('http://112.74.104.132:10086')
+			var socket = io.connect('http://{{IP}}:10086')
 			exports.socket = socket
 		})
 	</script>

@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 import os
+import json
 from web.contrib.template import render_jinja
 
 file = "logs/webpy.log" # 日志文件路径 #
@@ -17,3 +18,6 @@ render = render_jinja(
 	encoding = 'utf-8'
 )
 upload_path = os.path.join(app_root,'static/upload')
+
+webConfig = json.loads(open(os.path.join(app_root,'package.json')).read())
+

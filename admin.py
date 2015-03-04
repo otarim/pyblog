@@ -8,7 +8,7 @@ import json
 from markdown import markdown
 from sign import sign
 from common import *
-from config import render,upload_path,app_root
+from config import render,upload_path,app_root,webConfig
 from conn import client
 from bson.objectid import ObjectId
 
@@ -51,7 +51,7 @@ class regAccount:
 				'email': email,
 				'token': token
 			},True)
-			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://112.74.104.132:8080/u/reg?token='+token+'">http://112.74.104.132:8080/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
+			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://'+webConfig['hostname']+'/u/reg?token='+token+'">http://'+webConfig['hostname']+'/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
 			return json.dumps({
 				'code': 200,
 				'msg': '邮件已发出，请打开邮箱检查收件箱，如果收件箱找不到邮件，可能在垃圾邮件里面可以找到'
