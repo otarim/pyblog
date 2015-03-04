@@ -121,13 +121,7 @@ class post:
 			}
 			if mediaChanged == 'true':
 				if isinstance(data.file,types.InstanceType):
-					try:
-						setValue['media'] = upload(data.file)
-					except:
-						return json.dumps({
-							'code': 500,
-							'msg': '文件大小异常'
-						})
+					setValue['media'] = upload(data.file)
 				else:
 					setValue['media'] = None
 			db['posts'].update({'_id': ObjectId(data.id)},{'$set': setValue})
