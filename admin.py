@@ -51,7 +51,8 @@ class regAccount:
 				'email': email,
 				'token': token
 			},True)
-			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://'+webConfig['hostname']+'/u/reg?token='+token+'">http://'+webConfig['hostname']+'/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
+			webName = webConfig['hostname'].encode('utf8')
+			web.sendmail('otarim@icloud.com', email, '注册 pyblog', '点击链接跳转到注册页面<a href="http://'+webName+'/u/reg?token='+token+'">http://'+webName+'/u/reg?token='+token+'</a>' ,headers=({'Content-Type': 'text/html; charset=UTF-8'}))
 			return json.dumps({
 				'code': 200,
 				'msg': '邮件已发出，请打开邮箱检查收件箱，如果收件箱找不到邮件，可能在垃圾邮件里面可以找到'
