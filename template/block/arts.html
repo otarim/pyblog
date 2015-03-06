@@ -9,7 +9,7 @@
 	.art-mod,.art-del {font-size: 12px;font-style: normal;cursor: pointer;margin-left: 5px;}
 	.arts .art-del {color: #FF1F26;}
 	.arts .art-mod {color: #009688;}
-	.assign a {color: #A9A9A9;}
+	.private a {color: #A9A9A9;}
 	@media screen and (min-width:800px) {
 		.art-mod,.art-del {display: none;}
 		.arts li:hover .art-mod,.arts li:hover .art-del {display: inline;}
@@ -25,7 +25,9 @@
 	{% if count %}
 	<ol>
 	{% for post in posts %}
-		{% if post.assign %}
+		{% if post.private %}
+		<li class="private" data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>
+		{% elif post.assign %}
 		<li class="assign" data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>
 		{% else %}
 		<li data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>

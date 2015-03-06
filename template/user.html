@@ -7,7 +7,7 @@
 	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
 	.rep p {text-align: right;}
 	.user-follow,.user-follow:hover {text-decoration: none;}
-	.assign a {color: #A9A9A9;}
+	.private a {color: #A9A9A9;}
 	@media screen and (min-width: 800px){
 		.user-info em {color: #E91E63;}
 		.rep {padding: 30px;width: 400px;height: 250px;}
@@ -63,6 +63,8 @@
 		{% if post.showPost %}
 		{% if post.assign %}
 		<li class="assign"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% elif post.private %}
+		<li class="private"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
 		{% else %}
 		<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
 		{% endif %}

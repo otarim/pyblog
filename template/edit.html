@@ -96,6 +96,10 @@
 				</p>
 			</div>
 			{% endif %}
+			{% set checked = ' checked' if post.private %}
+			<div class="write-private row">
+				<input type="checkbox" name="private" id="private"{{checked}}>仅自己可见
+			</div>
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
 	</div>
@@ -163,7 +167,8 @@
 						file: $('#file')[0].files[0],
 						mediaChanged: $('#mediaChanged').val(),
 						captcha: $('#captcha').val(),
-						assigns: getAssigns()
+						assigns: getAssigns(),
+						private: $('#private')[0].checked
 					},
 					traditional: true,
 					success: function(data){
@@ -239,6 +244,13 @@
 			$(this).css({'background': getRandomColor()})
 		})
 		{% endif %}
+		$('#private').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*3*1024
 			if(file.type.match('image')){

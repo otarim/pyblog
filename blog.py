@@ -94,17 +94,21 @@ class showPost:
 			post['artist'] = artist
 			captcha = post.get('captcha')
 			assigns = post.get('assigns')
+			private = post.get('private')
 			if captcha:
 				# 如果存在验证码
 				if captcha != data.captcha:
 					# 如果验证码不等于输入验证码，跳转到授权页面
 					return web.redirect('/postAccess?id=' + str(post['_id']))
+			if private:
+				if not hasRight:
+					raise web.internalerror('你没有查看权限')
 			# 不存在验证码，或者验证码正确，直接访问
 			if assigns:
 				# 是否指定用户查看
 				if not hasRight and str(user['_id']) not in assigns:
 					# 有权限
-					raise web.internalerror('你没有修改权限')
+					raise web.internalerror('你没有查看权限')
 			return render.article({
 				'post': post,
 				'hasRight': hasRight
@@ -133,6 +137,12 @@ class showUser:
 			user = db['users'].find_one({'username': web.cookies().get('pyname')})
 			posts = list(db['posts'].find({'artist':id}).sort('postDate',-1))
 			for i in posts:
+				if i.get('private'):
+					if user['_id'] == i['artist']:
+						i['showPost'] = i['private'] = True
+					else:
+						i['showPost'] = False
+					continue
 				if i.get('assigns'):
 					if user['_id'] == i['artist'] or str(user['_id']) in i.get('assigns'):
 						i['showPost'] = i['assign'] = True
@@ -227,6 +237,12 @@ def getPosts():
 				dirname = os.path.dirname(i['media'])
 				basename = os.path.basename(i['media'])
 				i['media'] = os.path.normpath(dirname + '/thumbs/'+basename)
+			if i.get('private'):
+				if user['_id'] == i['artist']:
+					i['showPost'] = i['private'] = True
+				else:
+					i['showPost'] = False
+				continue
 			if i.get('assigns'):
 				if user['_id'] == i['artist'] or str(user['_id']) in i.get('assigns'):
 					i['showPost'] = i['assign'] = True
@@ -257,9 +273,9 @@ class editPost:
 					followers = None
 				if post['tags'] == '':
 					hasTag = False
-				if 'tags' in post:
+				if post.get('tags'):
 					post['tags'] = post['tags'].split(',')
-				if 'assigns' in post:
+				if post.get('assigns'):
 					assignMap = {}
 					for i in post['assigns']:
 						for j in followers:

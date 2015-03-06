@@ -10,8 +10,9 @@
 		background: url(/static/imgs/lock_black.svg) no-repeat 5px center;
 		padding-left: 30px;
 	}
-	.art-asign h2 a {color: #A9A9A9;}
-	.art-asign h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;}
+	.art-private h2 a {color: #A9A9A9;}
+	.art-private h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;vertical-align: middle;}
+	.art-assign h2 a::after {content: ''; width: 23px;height: 18px;background: url(/static/imgs/group-add.svg) no-repeat;display: inline-block;margin-left: 5px;vertical-align: middle;}
 	@media screen and (min-width:800px) {
 		.arts {min-height: 500px;}
 		.art {margin-bottom: 20px;}
@@ -42,8 +43,10 @@
 	<div class="arts">
 		{% for post in posts %}
 		{% if post.showPost %}
-		{% if post.assign %}
-		<section class="art art-asign">
+		{% if post.private %}
+		<section class="art art-private">
+		{% elif post.assign %}
+		<section class="art art-assign">
 		{% else %}
 		<section class="art">
 		{% endif %}
@@ -74,7 +77,7 @@
 {% raw %}
 <script id="template" type="x-tmpl-mustache">
 	{{#post.assign}}
-	<section class="art art-asign">
+	<section class="art art-assign">
 	{{/post.assign}}
 	{{^post.assign}}
 	<section class="art">

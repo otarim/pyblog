@@ -93,3 +93,6 @@ def get_my_ip():
     except socket.error:
         return "127.0.0.1"
 
+def isTrue(str):
+	return str.lower() == 'true'
+

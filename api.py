@@ -40,6 +40,10 @@ class post:
 			posts = list(db['posts'].find({'artist': {'$in': follower}},{'artist': 1,'captcha': 1,'title': 1,'postDate': 1,'media': 1,'assigns': 1}).sort('postDate',-1).skip((int(query.page) - 1) * int(query.pageNum)).limit(int(query.pageNum)))
 			posts_remove = []
 			for i in posts:
+				if i.get('private'):
+					if user['_id'] != i['artist']:
+						posts_remove.append(i)
+						continue
 				if i.get('assigns'):
 					if user['_id'] != i['artist'] and str(user['_id']) not in i.get('assigns'):
 						posts_remove.append(i)
@@ -92,7 +96,8 @@ class post:
 				'postDate': time.time(),
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': data.assigns
+				'assigns': None if isTrue(data.private) else data.assigns,
+				'private': True if isTrue(data.private) else False
 			})
 			web.header('Content-Type','application/json')
 			return json.dumps({'code':200,'result': {
@@ -103,7 +108,8 @@ class post:
 				'media': fileurl,
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': data.assigns
+				'assigns': None if isTrue(data.private) else data.assigns,
+				'private': data.private
 			}})
 		else:
 			return '你他妈还没登陆啊'
@@ -111,12 +117,14 @@ class post:
 		if checkLogin():
 			data = web.input(file={},tags=[],assigns=[],captcha=None)
 			mediaChanged = data.mediaChanged
+			# python true,True,false,False string...
 			setValue = {
 				'title': web.net.websafe(data.title),
 				'content': web.net.websafe(data.content),
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': data.assigns,
+				'assigns': None if isTrue(data.private) else data.assigns,
+				'private': True if isTrue(data.private) else False,
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':
