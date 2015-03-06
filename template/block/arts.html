@@ -3,13 +3,15 @@
 	.arts li {line-height: 36px;height: 36px;text-align: right;}
 	.arts li::after {display: table;clear: both;content: '';}
 	/*.arts li a::before {content: counter(req);}*/
-	.arts li a {float: left;}
+	.arts li a {float: left;height: 36px;line-height: 36px;}
 	.arts li a:hover {border-bottom: none;}
 	.arts li .art-mod {float: none;}
 	.art-mod,.art-del {font-size: 12px;font-style: normal;cursor: pointer;margin-left: 5px;}
 	.arts .art-del {color: #FF1F26;}
 	.arts .art-mod {color: #009688;}
 	.private a {color: #A9A9A9;}
+	.private::before {content: '[私密]';font-size: 12px;line-height: 36px;float: left;}
+	.assign::before {content: '[权限]';font-size: 12px;line-height: 36px;float: left;}
 	@media screen and (min-width:800px) {
 		.art-mod,.art-del {display: none;}
 		.arts li:hover .art-mod,.arts li:hover .art-del {display: inline;}

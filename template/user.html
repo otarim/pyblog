@@ -8,6 +8,8 @@
 	.rep p {text-align: right;}
 	.user-follow,.user-follow:hover {text-decoration: none;}
 	.private a {color: #A9A9A9;}
+	.private a::after {content: '[私密]';font-size: 12px;line-height: 36px;}
+	.assign a::after {content: '[权限]';font-size: 12px;line-height: 36px;}
 	@media screen and (min-width: 800px){
 		.user-info em {color: #E91E63;}
 		.rep {padding: 30px;width: 400px;height: 250px;}
