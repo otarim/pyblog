@@ -96,8 +96,9 @@ class post:
 				'postDate': time.time(),
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': None if isTrue(data.private) else data.assigns,
-				'private': True if isTrue(data.private) else False
+				'assigns': None if isTrue(data.private) or isTrue(data.public) else data.assigns,
+				'private': True if isTrue(data.private) else False,
+				'public': True if isTrue(data.public) else False
 			})
 			web.header('Content-Type','application/json')
 			return json.dumps({'code':200,'result': {
@@ -108,8 +109,9 @@ class post:
 				'media': fileurl,
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': None if isTrue(data.private) else data.assigns,
-				'private': data.private
+				'assigns': None if isTrue(data.private) or isTrue(data.public) else data.assigns,
+				'private': data.private,
+				'public': data.public
 			}})
 		else:
 			return '你他妈还没登陆啊'
@@ -123,8 +125,9 @@ class post:
 				'content': web.net.websafe(data.content),
 				'tags': ','.join(data['tags']),
 				'captcha': web.net.websafe(data.captcha),
-				'assigns': None if isTrue(data.private) else data.assigns,
+				'assigns': None if isTrue(data.private) or isTrue(data.public) else data.assigns,
 				'private': True if isTrue(data.private) else False,
+				'public': True if isTrue(data.public) else False,
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':

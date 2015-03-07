@@ -83,23 +83,29 @@ class index:
 
 class showPost:
 	def GET(self,id):
+		data = web.input(captcha=None)
+		id = ObjectId(id)
+		post = db['posts'].find_one({'_id': id})
+		artist = db['users'].find_one({'_id': post['artist']})
+		post['artist'] = artist
+		captcha = post.get('captcha')
+		public = post.get('public')
+		if captcha:
+			# 如果存在验证码
+			if captcha != data.captcha:
+				# 如果验证码不等于输入验证码，跳转到授权页面
+				return web.redirect('/postAccess?id=' + str(post['_id']))
+		if public:
+			return render.article({
+				'post': post,
+				'hasRight': False
+			})
 		if checkLogin():
-			data = web.input(captcha=None)
 			access = False
-			id = ObjectId(id)
-			post = db['posts'].find_one({'_id': id})
 			user = db['users'].find_one({'username': web.cookies().get('pyname')})
-			artist = db['users'].find_one({'_id': post['artist']})
 			hasRight = str(artist['_id']) == str(user['_id'])
-			post['artist'] = artist
-			captcha = post.get('captcha')
 			assigns = post.get('assigns')
 			private = post.get('private')
-			if captcha:
-				# 如果存在验证码
-				if captcha != data.captcha:
-					# 如果验证码不等于输入验证码，跳转到授权页面
-					return web.redirect('/postAccess?id=' + str(post['_id']))
 			if private:
 				if not hasRight:
 					raise web.internalerror('你没有查看权限')
@@ -228,7 +234,7 @@ def getPosts():
 		follower = []
 		if master:
 			follower = master['follower']
-		follower.append(user['_id'])		
+		follower.append(user['_id'])	
 		posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(5))
 		# .sort('postDate')
 		# cannot set options after executing query

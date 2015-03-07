@@ -21,6 +21,8 @@ db = client.pyblog
 
 def transformPosts(posts,artists):
 	for i in posts:
+		if str(i['artist']) not in artists:
+			artists[str(i['artist'])] = db['users'].find_one({'_id': i['artist']})
 		i['artist'] = artists[str(i['artist'])]
 	return posts
 

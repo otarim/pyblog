@@ -10,8 +10,9 @@
 	.arts .art-del {color: #FF1F26;}
 	.arts .art-mod {color: #009688;}
 	.private a {color: #A9A9A9;}
-	.private::before {content: '[私密]';font-size: 12px;line-height: 36px;float: left;}
-	.assign::before {content: '[权限]';font-size: 12px;line-height: 36px;float: left;}
+	.private::before {content: '[私密]';font-size: 12px;line-height: 36px;float: left;margin-right: 5px;color: #A9A9A9;}
+	.public::before {content: '[公开]';font-size: 12px;line-height: 36px;float: left;margin-right: 5px;}
+	.assign::before {content: '[权限]';font-size: 12px;line-height: 36px;float: left;margin-right: 5px;}
 	@media screen and (min-width:800px) {
 		.art-mod,.art-del {display: none;}
 		.arts li:hover .art-mod,.arts li:hover .art-del {display: inline;}
@@ -27,7 +28,9 @@
 	{% if count %}
 	<ol>
 	{% for post in posts %}
-		{% if post.private %}
+		{% if post.public %}
+		<li class="public" data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>
+		{% elif post.private %}
 		<li class="private" data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>
 		{% elif post.assign %}
 		<li class="assign" data-id="{{post._id}}"><a href="/posts/{{post._id}}">{{post.title}}</a><a href="/post/edit/{{post._id}}" class="art-mod">[i修改]</a><i class="art-del">[x删除]</i></li>

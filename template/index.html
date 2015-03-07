@@ -11,8 +11,9 @@
 		padding-left: 30px;
 	}
 	.art-private h2 a {color: #A9A9A9;}
-	.art-private h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;vertical-align: middle;}
-	.art-assign h2 a::after {content: ''; width: 23px;height: 18px;background: url(/static/imgs/group-add.svg) no-repeat;display: inline-block;margin-left: 5px;vertical-align: middle;}
+	.art-private h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;}
+	.art-public h2 a::after {content: ''; width: 23px;height: 20px;background: url(/static/imgs/public.svg) no-repeat;display: inline-block;margin-left: 5px;}
+	.art-assign h2 a::after {content: ''; width: 23px;height: 14px;background: url(/static/imgs/group-add.svg) no-repeat;display: inline-block;margin-left: 5px;}
 	@media screen and (min-width:800px) {
 		.arts {min-height: 500px;}
 		.art {margin-bottom: 20px;}
@@ -27,6 +28,8 @@
 		.art div+h2 {margin-top: -42px;height: 42px;line-height: 42px;color: #fff;background: rgba(0,0,0,.7);padding: 0 10px;border-left: none;}
 		.art div+h2 a {color: #fff;}
 		.art div+h2 a:hover {text-decoration: none;}
+		.art-public div+h2 a::after {background-image: url(/static/imgs/public-white.svg);} 
+		.art-assign div+h2 a::after {background-image: url(/static/imgs/group-add-white.svg);} 
 		.art p {padding: 5px 10px;font-size: 14px;}
 		.art em {font-weight: normal;}
 		.art-avatar {vertical-align: middle;margin-right: 5px;}
@@ -45,6 +48,8 @@
 		{% if post.showPost %}
 		{% if post.private %}
 		<section class="art art-private">
+		{% elif post.public %}
+		<section class="art art-public">
 		{% elif post.assign %}
 		<section class="art art-assign">
 		{% else %}
@@ -79,6 +84,12 @@
 	{{#post.assign}}
 	<section class="art art-assign">
 	{{/post.assign}}
+	{{#post.private}}
+	<section class="art art-private">
+	{{/post.private}}
+	{{#post.public}}
+	<section class="art art-public">
+	{{/post.public}}
 	{{^post.assign}}
 	<section class="art">
 	{{/post.assign}}

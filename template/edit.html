@@ -18,7 +18,9 @@
 	.followList-show {display: block;}
 	.followList {margin: 0;list-style: none;}
 	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
-	.write-assigns-inserted {margin-top: 10px;}
+	.write-assigns-inserted {margin-top: 20px;}
+	.write-private input[type=checkbox],.write-public input[type=checkbox] {margin-right: 10px;}
+	input[type=text][disabled] {cursor: not-allowed;}
 	@media screen and (min-width:800px) {
 		.row {margin-bottom: 20px;}
 		.write-media {width: 100px;}
@@ -100,6 +102,10 @@
 			<div class="write-private row">
 				<input type="checkbox" name="private" id="private"{{checked}}>仅自己可见
 			</div>
+			{% set checked = ' checked' if post.public %}
+			<div class="write-public row">
+				<input type="checkbox" name="public" id="public"{{checked}}>所有人都可以见（包括未登录用户）
+			</div>
 			<p class="write-postBtn row"><button class="postBtn btn btn-primary">更新</button></p>
 		</div>
 	</div>
@@ -168,7 +174,8 @@
 						mediaChanged: $('#mediaChanged').val(),
 						captcha: $('#captcha').val(),
 						assigns: getAssigns(),
-						private: $('#private')[0].checked
+						private: $('#private')[0].checked,
+						public: $('#public')[0].checked
 					},
 					traditional: true,
 					success: function(data){
@@ -237,8 +244,9 @@
 				assigns.append(em)
 			}
 		})
-		assigns.on('click','em',function(){
+		assigns.on('click','em',function(e){
 			$(this).remove()
+			return false
 		})
 		$('#assigns em').each(function(index){
 			$(this).css({'background': getRandomColor()})
@@ -250,6 +258,15 @@
 			}else{
 				$('#assign').attr('disabled',null)
 			}
+			$('#public')[0].checked = false
+		})
+		$('#public').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+			$('#private')[0].checked = false
 		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*3*1024
@@ -272,6 +289,11 @@
 			})
 			return ret
 		}
+		$(document).on('click',function(e){
+			if(!ota.contains($('.write-assigns')[0],e.target)){
+				$('.followList').removeClass('followList-show')
+			}
+		})
 	})
 </script>
 {% endblock %}

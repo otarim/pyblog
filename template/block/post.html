@@ -11,8 +11,9 @@
 	.followList-show {display: block;}
 	.followList {margin: 0;list-style: none;}
 	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
-	.write-private input[type=checkbox] {margin-right: 10px;}
+	.write-private input[type=checkbox],.write-public input[type=checkbox] {margin-right: 10px;}
 	input[type=text][disabled] {cursor: not-allowed;}
+	.write-assigns-inserted {margin-top: 20px;}
 	@media screen and (min-width:800px) {
 		/*input 元素不会继承 box-sizeing*/
 		.postBtn {width: 120px;letter-spacing: .5em;}
@@ -66,6 +67,9 @@
 		{% endif %}
 		<div class="write-private row">
 			<input type="checkbox" name="private" id="private">仅自己可见
+		</div>
+		<div class="write-public row">
+			<input type="checkbox" name=" public" id="public">所有人都可以见（包括未登录用户）
 		</div>
 		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
 	</div>
@@ -121,7 +125,8 @@
 						captcha: $('#captcha').val(),
 						file: $('#file')[0].files[0],
 						assigns: getAssigns(),
-						private: $('#private')[0].checked
+						private: $('#private')[0].checked,
+						public: $('#public')[0].checked
 					},
 					traditional: true,
 					success: function(data){
@@ -194,6 +199,15 @@
 			}else{
 				$('#assign').attr('disabled',null)
 			}
+			$('#public')[0].checked = false
+		})
+		$('#public').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+			$('#private')[0].checked = false
 		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*5*1024
@@ -224,5 +238,10 @@
 			})
 			return ret
 		}
+		$(document).on('click',function(e){
+			if(!ota.contains($('.write-assigns')[0],e.target)){
+				$('.followList').removeClass('followList-show')
+			}
+		})
 	})
 </script>
