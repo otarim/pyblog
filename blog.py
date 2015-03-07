@@ -235,7 +235,7 @@ def getPosts():
 		if master:
 			follower = master['follower']
 		follower.append(user['_id'])	
-		posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(5))
+		posts = list(db['posts'].find({'artist': {'$in': follower}}).sort('postDate',-1).limit(10))
 		# .sort('postDate')
 		# cannot set options after executing query
 		for i in posts:
