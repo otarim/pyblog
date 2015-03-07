@@ -191,6 +191,7 @@
 		})
 		assigns.on('click','em',function(){
 			$(this).remove()
+			return false
 		})
 		{% endif %}
 		$('#private').on('change',function(){
