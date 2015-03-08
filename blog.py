@@ -87,6 +87,11 @@ class showPost:
 		id = ObjectId(id)
 		post = db['posts'].find_one({'_id': id})
 		artist = db['users'].find_one({'_id': post['artist']})
+		user = db['users'].find_one({'username': web.cookies().get('pyname')})
+		if user:
+			hasRight = str(artist['_id']) == str(user['_id'])
+		else:
+			hasRight = False
 		post['artist'] = artist
 		captcha = post.get('captcha')
 		public = post.get('public')
@@ -98,12 +103,10 @@ class showPost:
 		if public:
 			return render.article({
 				'post': post,
-				'hasRight': False
+				'hasRight': hasRight
 			})
 		if checkLogin():
 			access = False
-			user = db['users'].find_one({'username': web.cookies().get('pyname')})
-			hasRight = str(artist['_id']) == str(user['_id'])
 			assigns = post.get('assigns')
 			private = post.get('private')
 			if private:
