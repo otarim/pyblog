@@ -1,7 +1,9 @@
 <style>
 	.write-post input[type=text] {width: 100%;padding: .5em 1em;}
 	.write-content textarea {width: 100%;min-height: 250px;padding: 1em;}
-	.write-media {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 36px;color: #fff;background: #8BC34A;text-align: center;border: 1px solid #60A113;}
+	.write-tool>div {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 34px;text-align: center;display: inline-block;}
+	.write-media {background: #8BC34A;color: #fff;border: 1px solid #60A113;}
+	.write-music {background: #F8E71C;color: #333;border: 1px solid #D4C500;}
 	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
 	.media-wrap {position: relative;display: inline-block;width: 100%;}
 	.media-wrap i {position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
@@ -14,10 +16,16 @@
 	.write-private input[type=checkbox],.write-public input[type=checkbox] {margin-right: 10px;}
 	input[type=text][disabled] {cursor: not-allowed;}
 	.write-assigns-inserted {margin-top: 20px;}
+	.write-music-inserted {display: none;}
+	.music-del {font-family: arial;font-style: normal;cursor: pointer;font-size: 12px;width: 22px;height: 22px;display: inline-block;text-align: center;line-height: 22px;background: rgb(229, 28, 35);vertical-align: top;margin-right: 5px;color: #fff;}
+	.insertMusic-value {margin-right: 5px;}
+	.insertMusic h5 {margin-bottom: 10px;}
+	.insertMusic input[type=checkbox] {margin-right: 5px;}
 	@media screen and (min-width:800px) {
 		/*input 元素不会继承 box-sizeing*/
 		.postBtn {width: 120px;letter-spacing: .5em;}
 		.write-media:hover {background: #60A113;}
+		.write-music:hover {background: #DBCD13;}
 		/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
 		.media-wrap i {display: none;}
 		.media-wrap:hover i {display: block;}
@@ -31,6 +39,7 @@
 		.write-content textarea {min-height: 150px;}
 		.write-media {width: 100%;}
 		.postBtn {width: 100%;}
+		.insertMusic-value {display: block;width: 100%;}
 	}
 	
 </style>
@@ -42,8 +51,15 @@
 			<p class="row"><input type="text" class="write-tag" placeholder="文章标签,按 enter 插入"></p>
 			<p id="tags" class="write-tags-inserted"></p>
 		</div>
-		<div class="write-media row"> + 插入头图<input type="file" id="file" class="media-file"></div>
+		<div class="write-tool row">
+			<div class="write-media"> + 插入头图<input type="file" id="file" class="media-file"></div>
+			<!-- <div class="write-emoji"> + 插入表情</div> -->
+			<div class="write-music"> + 插入音乐</div>
+		</div>
 		<div class="write-media-inserted row"></div>
+		<div class="write-music-inserted row">
+			<i class="music-del">X</i><span class="write-music-info"></span>
+		</div>
 		<div class="write-content row">
 			<textarea name="content" id="content" placeholder="从这里开始"></textarea>
 		</div>
@@ -92,6 +108,13 @@
 {% call pop('popC') %}
     标题或者内容不能为空
 {% endcall %}
+<template id="insertMusic">
+	<div class="pop insertMusic">
+		<h5>插入音乐...</h5>
+		<p><input type="text" class="insertMusic-value" placeholder="音乐地址"><input type="checkbox" id="insertMusic-autoplay">自动播放</p>
+		<p><a href="javascript:;" class="insertMusic-apply" data-event="setInsertMusic">插入</a></p>
+	</div>
+</template>
 <script>
 	define('postData',['core','Popbox','arts'],function(ota,Popbox,arts,exports){
 		var $ = ota.get,
@@ -126,7 +149,8 @@
 						file: $('#file')[0].files[0],
 						assigns: getAssigns(),
 						private: $('#private')[0].checked,
-						public: $('#public')[0].checked
+						public: $('#public')[0].checked,
+						music: $('.write-music-inserted').data('value')
 					},
 					traditional: true,
 					success: function(data){
@@ -144,6 +168,7 @@
 						$('#file').val('')
 						$('#content').val('')
 						$('.write-media-inserted').html('')
+						$('.write-music-inserted').html('')
 					}
 				})
 			}else{
@@ -209,6 +234,26 @@
 				$('#assign').attr('disabled',null)
 			}
 			$('#private')[0].checked = false
+		})
+		$('.write-music').on('click',function(){
+			var popA = new Popbox({
+				el: function(){
+					return $('#insertMusic').html()
+				},
+				events: {
+					'click#setInsertMusic': function(){
+						var autoplay = +$('#insertMusic-autoplay')[0].checked,
+							val = $('.insertMusic-value').val() + '&autoplay=' + autoplay
+						$('.write-music-inserted').css({'display': 'block'}).data('value',val)
+						$('.write-music-info').text('音乐路径：' + $('.insertMusic-value').val() + ' 自动播放：' + ($('#insertMusic-autoplay')[0].checked ? '是' : '否'))
+						this.remove()
+					}
+				}
+			}).show()
+		})
+		$('.write-music-inserted').on('click','.music-del',function(){
+			$('.write-music-inserted').data('value','').css({'display': 'none'})
+			$('.write-music-info').text('')
 		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*5*1024

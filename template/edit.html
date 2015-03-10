@@ -6,7 +6,9 @@
 	.write-post input[type=text] {width: 100%;padding: .5em 1em;box-sizing: border-box;}
 	.write-content textarea {width: 100%;min-height: 250px;padding: 1em;box-sizing: border-box;}
 	.write-postBtn {text-align: right;}
-	.write-media {position: relative;cursor: pointer;z-index: 10;height: 36px;line-height: 36px;color: #fff;background: #8BC34A;text-align: center;border: 1px solid #60A113;}
+	.write-tool>div {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 34px;text-align: center;display: inline-block;}
+	.write-media {background: #8BC34A;color: #fff;border: 1px solid #60A113;}
+	.write-music {background: #F8E71C;color: #333;border: 1px solid #D4C500;}
 	/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
 	::-webkit-file-upload-button {cursor:pointer;}
 	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
@@ -21,10 +23,14 @@
 	.write-assigns-inserted {margin-top: 20px;}
 	.write-private input[type=checkbox],.write-public input[type=checkbox] {margin-right: 10px;}
 	input[type=text][disabled] {cursor: not-allowed;}
+	.music-del {font-family: arial;font-style: normal;cursor: pointer;font-size: 12px;width: 22px;height: 22px;display: inline-block;text-align: center;line-height: 22px;background: rgb(229, 28, 35);vertical-align: top;margin-right: 5px;color: #fff;}
+	.insertMusic-value {margin-right: 5px;}
+	.insertMusic h5 {margin-bottom: 10px;}
 	@media screen and (min-width:800px) {
 		.row {margin-bottom: 20px;}
 		.write-media {width: 100px;}
 		.write-media:hover {background: #60A113;}
+		.write-music:hover {background: #DBCD13;}
 		.media-wrap i {display: none;}
 		.media-wrap::after {content: '';position: absolute;width: 100%;height: 100%;top: 0;left: 0;;background: rgba(0,0,0,.7);transition: opacity linear .3s;}
 		.media-wrap::after {opacity: 0}
@@ -42,6 +48,7 @@
 		.write-post {margin: 10px;}
 		.write-media {width: 100%;}
 		.postBtn {width: 100%;}
+		.insertMusic-value {display: block;}
 	}
 	
 </style>
@@ -59,7 +66,11 @@
 					{% endif %}
 				</p>
 			</div>
-			<div class="write-media row"> + 插入头图<input type="file" id="file" class="media-file"></div>
+			<div class="write-tool row">
+				<div class="write-media"> + 插入头图<input type="file" id="file" class="media-file"></div>
+				<!-- <div class="write-emoji"> + 插入表情</div> -->
+				<div class="write-music"> + 插入音乐</div>
+			</div>
 			<div class="write-media-inserted row">
 				{% if post.media %}
 				<span class="media-wrap">
@@ -67,6 +78,13 @@
 				</span>
 				{% endif %}
 			</div>
+			{% if post.music %}
+			<div class="write-music-inserted row" data-value="http://music.163.com/#/{{post.music.type}}?id={{post.music.id}}&autoplay={{post.music.autoplay}}">
+				<i class="music-del">X</i><span class="write-music-info">音乐路径：http://music.163.com/#/{{post.music.type}}?id={{post.music.id}} 自动播放：{% if post.music.autoplay %}是{% else %}否{%endif%}</span>
+			</div>
+			{% else %}
+			<div class="write-music-inserted row"></div>
+			{% endif %}
 			<div class="write-content row">
 				<textarea name="content" id="content" placeholder="从这里开始">{{post.content}}</textarea>
 			</div>
@@ -129,6 +147,13 @@
 	{% call pop('popC') %}
     	标题或者内容不能为空
 	{% endcall %}
+	<template id="insertMusic">
+		<div class="pop insertMusic">
+			<h5>插入音乐...</h5>
+			<p><input type="text" class="insertMusic-value" placeholder="音乐地址"><input type="checkbox" id="insertMusic-autoplay">自动播放</p>
+			<p><a href="javascript:;" class="insertMusic-apply" data-event="setInsertMusic">插入</a></p>
+		</div>
+	</template>
 	<input type="hidden" name="postId" value="{{post._id}}" id="postId">
 	<input type="hidden" name="mediaChanged" value="false" id="mediaChanged">
 {% endblock %}
@@ -175,7 +200,8 @@
 						captcha: $('#captcha').val(),
 						assigns: getAssigns(),
 						private: $('#private')[0].checked,
-						public: $('#public')[0].checked
+						public: $('#public')[0].checked,
+						music: $('.write-music-inserted').data('value')
 					},
 					traditional: true,
 					success: function(data){
@@ -267,6 +293,26 @@
 				$('#assign').attr('disabled',null)
 			}
 			$('#private')[0].checked = false
+		})
+		$('.write-music').on('click',function(){
+			var popA = new Popbox({
+				el: function(){
+					return $('#insertMusic').html()
+				},
+				events: {
+					'click#setInsertMusic': function(){
+						var autoplay = +$('#insertMusic-autoplay')[0].checked,
+							val = $('.insertMusic-value').val() + '&autoplay=' + autoplay
+						$('.write-music-inserted').css({'display': 'block'}).data('value',val)
+						$('.write-music-info').text('音乐路径：' + $('.insertMusic-value').val() + ' 自动播放：' + ($('#insertMusic-autoplay')[0].checked ? '是' : '否'))
+						this.remove()
+					}
+				}
+			}).show()
+		})
+		$('.write-music-inserted').on('click','.music-del',function(){
+			$('.write-music-inserted').data('value','').css({'display': 'none'})
+			$('.write-music-info').text('')
 		})
 		function bannerValidate(file,callback){
 			var reader = new FileReader,MAX_SIZE = 1024*3*1024

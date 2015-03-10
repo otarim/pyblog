@@ -40,6 +40,15 @@
 				{% if post.lastModify %}
 				<p class="article-modify"><i>最后修改时间：{{post.lastModify|datetimeformat()}}</i></p>
 				{% endif %}
+				<aside class="article-music">
+				{%if post.music %}
+				{% if post.music.type == 2%}
+				<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="http://music.163.com/outchain/player?type={{post.music.type}}&id={{post.music.id}}&auto={{post.music.autoplay}}&height=66"></iframe>
+				{% else %}
+				<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=450 src="http://music.163.com/outchain/player?type={{post.music.type}}&id={{post.music.id}}&auto={{post.music.autoplay}}&height=430"></iframe>
+				{% endif %}
+				{% endif %}
+				</aside>
 			</section>
 		</article>
 		<!-- 多说评论框 start -->

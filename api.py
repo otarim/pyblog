@@ -6,6 +6,7 @@ import time
 import json
 import cgi
 import types
+import urlparse
 # import urllib
 from markdown import markdown
 from sign import sign
@@ -14,6 +15,7 @@ from conn import client
 from bson.objectid import ObjectId
 from common import *
 from types import *
+
 
 db = client.pyblog
 
@@ -77,17 +79,22 @@ class post:
 			})
 	def POST(self):
 		if checkLogin():
-			data = web.input(file={},tags=[],assigns=[],captcha=None) # 这什么鬼？！！！！！ 无 file={}报错。。擦
+			data = web.input(file={},tags=[],assigns=[],captcha=None,music=None) # 这什么鬼？！！！！！ 无 file={}报错。。擦
 			fileurl = None
+			# 处理 media
 			if isinstance(data.file,types.InstanceType):
 				try:
 					fileurl = upload(data.file)
 				except:
 					return '文件大小异常'
 			id = db['users'].find_one({'username': web.cookies().get('pyname')}).get('_id')
-			# print data.keys
-			# 处理 media
-			# inert([])
+			# 处理 music
+			if data.music:
+				music = urlparse.urlparse(urlparse.urlparse(data.music).fragment)
+				query = urlparse.parse_qs(music.query,True)
+				musicType = music.path[1:]
+				musicId = query['id'][0]
+				musicAutoPlay = int(query['autoplay'][0])
 			post = db['posts'].insert({
 				'artist': id,
 				'title': web.net.websafe(data.title),
@@ -98,7 +105,8 @@ class post:
 				'captcha': web.net.websafe(data.captcha),
 				'assigns': None if isTrue(data.private) or isTrue(data.public) else data.assigns,
 				'private': True if isTrue(data.private) else False,
-				'public': True if isTrue(data.public) else False
+				'public': True if isTrue(data.public) else False,
+				'music': {'type': musicType,'id': musicId, 'autoplay': musicAutoPlay} if data.music else None
 			})
 			web.header('Content-Type','application/json')
 			return json.dumps({'code':200,'result': {
@@ -117,9 +125,16 @@ class post:
 			return '你他妈还没登陆啊'
 	def PUT(self):
 		if checkLogin():
-			data = web.input(file={},tags=[],assigns=[],captcha=None)
+			data = web.input(file={},tags=[],assigns=[],captcha=None,music=None)
 			mediaChanged = data.mediaChanged
 			# python true,True,false,False string...
+			# 处理 music
+			if data.music:
+				music = urlparse.urlparse(urlparse.urlparse(data.music).fragment)
+				query = urlparse.parse_qs(music.query,True)
+				musicType = music.path[1:]
+				musicId = query['id'][0]
+				musicAutoPlay = int(query['autoplay'][0])
 			setValue = {
 				'title': web.net.websafe(data.title),
 				'content': web.net.websafe(data.content),
@@ -128,6 +143,7 @@ class post:
 				'assigns': None if isTrue(data.private) or isTrue(data.public) else data.assigns,
 				'private': True if isTrue(data.private) else False,
 				'public': True if isTrue(data.public) else False,
+				'music': {'type': musicType,'id': musicId, 'autoplay': musicAutoPlay} if data.music else None,
 				'lastModify': time.time()
 			}
 			if mediaChanged == 'true':

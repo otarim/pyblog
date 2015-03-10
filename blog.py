@@ -96,11 +96,19 @@ class showPost:
 		post['artist'] = artist
 		captcha = post.get('captcha')
 		public = post.get('public')
+		music = post.get('music')
 		if captcha:
 			# 如果存在验证码
 			if captcha != data.captcha:
 				# 如果验证码不等于输入验证码，跳转到授权页面
 				return web.redirect('/postAccess?id=' + str(post['_id']))
+		if music:
+			musicMap = {
+				'playlist': 0,
+				'album': 1,
+				'song': 2
+			}
+			post['music']['type'] = musicMap[post['music']['type']]
 		if public:
 			return render.article({
 				'post': post,
