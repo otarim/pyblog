@@ -11,6 +11,7 @@ from admin import admin
 from api import api
 from common import *
 from bson.objectid import ObjectId
+from emoji import emojize
 
 web.config.debug = False
 
@@ -41,7 +42,7 @@ def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     return time.strftime(format,time.localtime(value))
 
 def markdownOutput(value):
-	return markdown(value)
+	return emojize(markdown(value))
 
 def wrapTags(value,path='/tags/'):
 	values = value.split(',')

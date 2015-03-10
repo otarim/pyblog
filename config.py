@@ -1,6 +1,7 @@
 # coding=utf-8
 import logging
 import os
+import time
 import json
 from web.contrib.template import render_jinja
 
@@ -20,4 +21,8 @@ render = render_jinja(
 upload_path = os.path.join(app_root,'static/upload')
 
 webConfig = json.loads(open(os.path.join(app_root,'package.json')).read())
+
+# 时区
+os.environ["TZ"] = "Asia/Shanghai"
+time.tzset()
 

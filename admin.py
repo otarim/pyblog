@@ -93,8 +93,8 @@ class reg:
 				'hasLogin': True,
 				'username': data.username
 			})
-			web.setcookie('pyname',data.username,36000,path='/')
-			web.setcookie('pyconnect',sign(data.username),36000,path='/')
+			web.setcookie('pyname',data.username,72000,path='/')
+			web.setcookie('pyconnect',sign(data.username),72000,path='/')
 			# 删除 token 表中的 document
 			db['regToken'].remove({'email': data['username']})
 			return web.redirect('/0') 
