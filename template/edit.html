@@ -83,7 +83,9 @@
 				<i class="music-del">X</i><span class="write-music-info">音乐路径：http://music.163.com/#/{{post.music.type}}?id={{post.music.id}} 自动播放：{% if post.music.autoplay %}是{% else %}否{%endif%}</span>
 			</div>
 			{% else %}
-			<div class="write-music-inserted row"></div>
+			<div class="write-music-inserted row">
+				<i class="music-del">X</i><span class="write-music-info"></span>
+			</div>
 			{% endif %}
 			<div class="write-content row">
 				<textarea name="content" id="content" placeholder="从这里开始">{{post.content}}</textarea>
