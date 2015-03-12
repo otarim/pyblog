@@ -150,7 +150,7 @@
 						assigns: getAssigns(),
 						private: $('#private')[0].checked,
 						public: $('#public')[0].checked,
-						music: $('.write-music-inserted').data('value')
+						music: $('.write-music-inserted').data('value') || ''
 					},
 					traditional: true,
 					success: function(data){
