@@ -1,0 +1,293 @@
+<style>
+	.write-post input[type=text] {width: 100%;padding: .5em 1em;}
+	.write-content textarea {width: 100%;min-height: 250px;padding: 1em;}
+	.write-tool>div {position: relative;cursor: pointer;z-index: 10;width: 100px;height: 36px;line-height: 34px;text-align: center;display: inline-block;}
+	.write-media {background: #8BC34A;color: #fff;border: 1px solid #60A113;}
+	.write-music {background: #F8E71C;color: #333;border: 1px solid #D4C500;}
+	.media-file {position: absolute;width: 100%;height: 100%;top: 0;left: 0;opacity: 0;cursor: pointer;}
+	.media-wrap {position: relative;display: inline-block;width: 100%;}
+	.media-wrap i {position: absolute;top: 10px;right: 10px;z-index: 5;background: #E51C23;width: 30px;height: 30px;line-height: 30px;text-align: center;color: #fff;font-style: normal;cursor: pointer;font-family: arial;}
+	.write-tags-inserted em,.write-assigns-inserted em {padding: 5px 10px;display: inline-block;font-weight: normal;color: #fff;cursor: not-allowed;}
+	.write-postBtn {text-align: right;}
+	.followList {display: none;}
+	.followList-show {display: block;}
+	.followList {margin: 0;list-style: none;}
+	.followList li {padding: 0 10px;border: 1px solid silver;margin-bottom: -1px;}
+	.write-private input[type=checkbox],.write-public input[type=checkbox] {margin-right: 10px;}
+	input[type=text][disabled] {cursor: not-allowed;}
+	.write-assigns-inserted {margin-top: 20px;}
+	.write-music-inserted {display: none;}
+	.music-del {font-family: arial;font-style: normal;cursor: pointer;font-size: 12px;width: 22px;height: 22px;display: inline-block;text-align: center;line-height: 22px;background: rgb(229, 28, 35);vertical-align: top;margin-right: 5px;color: #fff;}
+	.insertMusic-value {margin-right: 5px;}
+	.insertMusic h5 {margin-bottom: 10px;}
+	.insertMusic input[type=checkbox] {margin-right: 5px;}
+	@media screen and (min-width:800px) {
+		/*input 元素不会继承 box-sizeing*/
+		.postBtn {width: 120px;letter-spacing: .5em;}
+		.write-media:hover {background: #60A113;}
+		.write-music:hover {background: #DBCD13;}
+		/*http://stackoverflow.com/questions/7554845/the-cursorpointer-property-doesnt-apply-to-file-upload-buttons-in-webkit-brows*/
+		.media-wrap i {display: none;}
+		.media-wrap:hover i {display: block;}
+		.media-wrap::after {content: '';position: absolute;width: 100%;height: 100%;top: 0;left: 0;;background: rgba(0,0,0,.7);transition: opacity linear .3s;opacity: 0;}
+		.media-wrap:hover::after {opacity: 1;}
+		
+	}
+	@media screen and (max-width:800px) {
+		.row {margin-bottom: 10px;}
+		.write {padding: 10px;margin: 10px;box-shadow: 0 1px 16px rgba(0,0,0,.1);background: #fafafa;border: 1px solid silver;border-radius: 3px;}
+		.write-content textarea {min-height: 150px;}
+		.write-media {width: 100%;}
+		.postBtn {width: 100%;}
+		.insertMusic-value {display: block;width: 100%;}
+	}
+	
+</style>
+<div class="write">
+	<h2>发布</h2>
+	<div class="write-post">
+		<p class="row"><input type="text" name="title" id="title" placeholder="标题"></p>
+		<div class="write-tags row">
+			<p class="row"><input type="text" class="write-tag" placeholder="文章标签,按 enter 插入"></p>
+			<p id="tags" class="write-tags-inserted"></p>
+		</div>
+		<div class="write-tool row">
+			<div class="write-media"> + 插入头图<input type="file" id="file" class="media-file"></div>
+			<!-- <div class="write-emoji"> + 插入表情</div> -->
+			<div class="write-music"> + 插入音乐</div>
+		</div>
+		<div class="write-media-inserted row"></div>
+		<div class="write-music-inserted row">
+			<i class="music-del">X</i><span class="write-music-info"></span>
+		</div>
+		<div class="write-content row">
+			<textarea name="content" id="content" placeholder="从这里开始"></textarea>
+		</div>
+		<div class="write-captcha row">
+			<input type="text" name="captcha" id="captcha" placeholder="验证码">
+		</div>
+		{% if followers %}
+		<div class="write-assigns row">
+			<input type="text" name="assign" id="assign" placeholder="指定给 ta 看">
+			<ul class="followList">
+				{% for artist in followers %}
+				<li>
+					<a href="javascript:;" data-val="{{artist._id}}">
+						{{artist.nickname}}
+					</a>
+				</li>
+				{% endfor %}
+			</ul>
+			<p id="assigns" class="write-assigns-inserted"></p>
+		</div>
+		{% endif %}
+		<div class="write-private row">
+			<input type="checkbox" name="private" id="private">仅自己可见
+		</div>
+		<div class="write-public row">
+			<input type="checkbox" name=" public" id="public">所有人都可以见（包括未登录用户）
+		</div>
+		<p class="write-postBtn row"><button class="postBtn btn btn-primary">发布</button></p>
+	</div>
+</div>
+{% macro pop(id) -%}
+<template id="{{id}}">
+	<div class="pop">
+		<div class="pop-c">
+			{{caller()}}
+		</div>
+	</div>
+</template>
+{%- endmacro %}
+{% call pop('popA') %}
+    发布成功
+{% endcall %}
+{% call pop('popB') %}
+    秋刀马爹，发布中...
+{% endcall %}
+{% call pop('popC') %}
+    标题或者内容不能为空
+{% endcall %}
+<template id="insertMusic">
+	<div class="pop insertMusic">
+		<h5>插入音乐...</h5>
+		<p><input type="text" class="insertMusic-value" placeholder="音乐地址"><input type="checkbox" id="insertMusic-autoplay">自动播放</p>
+		<p><a href="javascript:;" class="insertMusic-apply" data-event="setInsertMusic">插入</a></p>
+	</div>
+</template>
+<script>
+	define('postData',['core','Popbox','arts'],function(ota,Popbox,arts,exports){
+		var $ = ota.get,
+			ajax = ota.ajax,
+			Popbox = Popbox.Popbox
+		$('#file').on('change',function(e){
+			var file = this.files[0],self = this
+			bannerValidate(file,function(err,ret){
+				if(err){
+					alert(err)
+					self.value = ''
+				}else{
+					$('.write-media-inserted').html('<span class="media-wrap"><img src="'+ret+'"><i>X</i></span>')
+				}
+			})
+		})
+		$('.postBtn').on('click',function(){
+			if($('#title').val() && $('#content').val()){
+				var popA = new Popbox
+				popA.reDraw(function(el){
+					return $('#popB').html()
+				}).show()
+				ajax({
+					url: '/api/post',
+					type: 'post',
+					dataType: 'json',
+					data: {
+						title: $('#title').val(),
+						tags: [].concat($('#tags em').html() || ''), // 多值处理
+						content: $('#content').val(),
+						captcha: $('#captcha').val(),
+						file: $('#file')[0].files[0],
+						assigns: getAssigns(),
+						private: $('#private')[0].checked,
+						public: $('#public')[0].checked,
+						music: $('.write-music-inserted').data('value') || ''
+					},
+					traditional: true,
+					success: function(data){
+						setTimeout(function(){
+							popA.reDraw(function(el){
+								return $('#popA').html()
+							}).show()
+							setTimeout(function(){
+								popA.remove()
+							},1000)
+						},200)
+						arts.renderPost(data.result)
+						$('.write input[type=text]').val('')
+						$('#tags').html('')
+						$('#file').val('')
+						$('#content').val('')
+						$('.write-media-inserted').html('')
+						$('.write-music-inserted').html('')
+					}
+				})
+			}else{
+				(new Popbox).reDraw(function(){
+					return $('#popC').html()
+				}).show()
+			}
+		})
+		$('.write-media-inserted').on('click','.media-wrap i',function(e){
+			$('#file').val('')
+			$('.write-media-inserted').html('')
+		})
+		var tags = $('#tags')
+		$('.write-tag').on('keypress',function(e){
+			if(e.which === 13){
+				e.preventDefault()
+				if(this.value !== ''){
+					var em = $('<em></em>')
+					em.css({'background':getRandomColor()})
+					em.text(this.value)
+					tags.append(em)
+					this.value = ''
+				}
+			}
+		})
+		$('.write-tags-inserted').on('click','em',function(e){
+			$(this).remove()
+			$('.write-tag')[0].focus()
+		})
+		{% if followers %}
+		var assigns = $('#assigns')
+		$('#assign').on('focus',function(e){
+			$('.followList').addClass('followList-show')
+		})
+		$('.followList').on('click','a',function(){
+			var val = $('#assigns em').text() || []
+				text = $(this).text().trim()
+			if(val.indexOf(text) == -1){
+				var em = $('<em></em>')
+				em.css({'background':getRandomColor()})
+				em.text(text)
+				em.data('val',$(this).data('val'))
+				assigns.append(em)
+			}
+		})
+		assigns.on('click','em',function(){
+			$(this).remove()
+			return false
+		})
+		{% endif %}
+		$('#private').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+			$('#public')[0].checked = false
+		})
+		$('#public').on('change',function(){
+			if(this.checked){
+				$('#assign').attr('disabled',true)
+			}else{
+				$('#assign').attr('disabled',null)
+			}
+			$('#private')[0].checked = false
+		})
+		$('.write-music').on('click',function(){
+			var popA = new Popbox({
+				el: function(){
+					return $('#insertMusic').html()
+				},
+				events: {
+					'click#setInsertMusic': function(){
+						var autoplay = +$('#insertMusic-autoplay')[0].checked,
+							val = $('.insertMusic-value').val() + '&autoplay=' + autoplay
+						$('.write-music-inserted').css({'display': 'block'}).data('value',val)
+						$('.write-music-info').text('音乐路径：' + $('.insertMusic-value').val() + ' 自动播放：' + ($('#insertMusic-autoplay')[0].checked ? '是' : '否'))
+						this.remove()
+					}
+				}
+			}).show()
+		})
+		$('.write-music-inserted').on('click','.music-del',function(){
+			$('.write-music-inserted').data('value','').css({'display': 'none'})
+			$('.write-music-info').text('')
+		})
+		function bannerValidate(file,callback){
+			var reader = new FileReader,MAX_SIZE = 1024*5*1024
+			if(file.type.match('image')){
+				reader.onload = function(e){
+					if(e.total > MAX_SIZE){
+						return callback('图片尺寸太大',null)
+					}
+					return callback(null,this.result)
+				}
+				reader.readAsDataURL(file)
+			}else{
+				return callback('图片格式有误',null)
+			}
+		}
+		var getRandomColor = (function(){
+			var colors = ['#E91E63','#5677FC','#8BC34A','#FFC107','#009688','#673AB7']
+			return function(){
+				var color = colors.shift()
+				colors.push(color)
+				return color
+			}
+		})()
+		function getAssigns(){
+			var ret = []
+			$('#assigns em').each(function(){
+				ret.push($(this).data('val'))
+			})
+			return ret
+		}
+		$(document).on('click',function(e){
+			if(!ota.contains($('.write-assigns')[0],e.target)){
+				$('.followList').removeClass('followList-show')
+			}
+		})
+	})
+</script>

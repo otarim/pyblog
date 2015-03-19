@@ -1,0 +1,51 @@
+<style>
+	.following ul,.followme ul {list-style: none;font-size: 0;}
+	.following li,.followme li {display: inline-block;font-size: 12px;width: 80px;height: 80px;margin: 10px;overflow: hidden;text-align: center;}
+	.following img,.followme img {width: 50px;height: 50px}
+	@media screen and (max-width:800px) {
+		.following,.followme {
+			padding: 10px;
+			margin: 10px;
+			box-shadow: 0 1px 16px rgba(0,0,0,.1);
+			background: #fafafa;
+			border: 1px solid silver;
+			border-radius: 3px;
+		}
+		.following li,.followme li {width: 70px;height: 70px;margin: 5px;}
+		.following img,.followme img {width: 30px;height: 30px;}
+	}
+</style>
+<div class="following">
+	<h2>我关注的人</h2>
+	{% if following %}
+	<ul>
+		{% for artist in following %}
+		<li>
+			<a href="/users/{{artist._id}}">
+				<img src="{{artist.avatar}}" alt="">
+				<p>{{artist.nickname}}</p>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>暂无关注的人</p>
+	{% endif %}
+</div>
+<div class="followme">
+	<h2>谁关注了我</h2>
+	{% if followers %}
+	<ul>
+		{% for artist in followers %}
+		<li>
+			<a href="/users/{{artist._id}}">
+				<img src="{{artist.avatar}}" alt="">
+				<p>{{artist.nickname}}</p>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>没人关注我</p>
+	{% endif %}
+</div>

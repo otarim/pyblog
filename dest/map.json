@@ -1,0 +1,1 @@
+{"res":{"msg.js":{"uri":"/msg.js","type":"js","deps":["http","socket.io","async","mongodb"]},"static/css/ota.css":{"uri":"/static/css/ota.css","type":"css"},"static/js/popbox.min.js":{"uri":"/static/js/popbox.min.js","type":"js"},"static/js/socket.io.js":{"uri":"/static/js/socket.io.js","type":"js"}},"pkg":{}}
