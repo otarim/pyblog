@@ -13,6 +13,10 @@ from common import *
 from bson.objectid import ObjectId
 from emoji import emojize
 
+# from pygments import highlight
+# from pygments.lexers import PythonLexer
+# from pygments.formatters import HtmlFormatter
+
 web.config.debug = False
 
 db = client.pyblog
@@ -30,6 +34,7 @@ urls = (
 	'/post/edit/(.*)', 'editPost',
 	'/postAccess', 'postAccess',
 	'/install', 'install'
+	# '/test', 'test'
 )
 
 render._lookup.globals.update(
@@ -336,6 +341,12 @@ class install:
 			f.close()
 			return '安装完毕'
 
+# class test:
+# 	def GET(self):
+# 		formatter = HtmlFormatter(encoding='utf-8', style = 'default', linenos = True)
+# 		code = highlight('print "hello, world"', PythonLexer(), formatter)
+# 		# return '<style>'+formatter.get_style_defs('.highlight')+'</style>' + code
+# 		return '<link rel="stylesheet" href="http://www.gocalf.com/blog/theme/css/style.min.css">' + code
 
 def beforeReq():
 	render._lookup.globals.update(

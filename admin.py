@@ -79,7 +79,7 @@ class reg:
 			# findAndModify 会锁定表
 			uid = db['ids'].find_and_modify(query={'name':'user'},update={'$inc':{'id':1}},new=True)['id']
 			db['users'].insert({
-				'uid': uid,
+				'uid': int(uid),
 				'username': data.username,
 				'nickname': data.nickname,
 				'avatar': getAvatar(data.username),
