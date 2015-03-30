@@ -52,7 +52,7 @@
 <header>
 	<h2>这货是...</h2>
 	<div class="user">
-		<p class="user-avatar-row"><img src="{{user.avatar}}" alt="" class="user-avatar" width="150" height="150"></p>
+		<p class="user-avatar-row"><img src="{{user.avatar}}&s=300" alt="" class="user-avatar" width="150" height="150"></p>
 		{% if Login and not me %}
 		<p class="user-nick"><a href="" class="user-chat" title="私信{{user.nickname}}" data-name="{{user.username}}" data-nick="{{user.nickname}}">@{{user.nickname}}</a><a href="javascript:;" data-id="{{user._id}}" class="user-follow{% if isFollow %} user-followed{% endif %}">{% if isFollow %}[已关注]{% else %}[未关注]{% endif %}</a></p>
 		{% endif %}
