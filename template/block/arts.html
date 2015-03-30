@@ -27,7 +27,7 @@
 </style>
 <div class="arts">
 	<h2>已发文章</h2>
-	{% if count %}
+	{% if posts|length %}
 	<ol>
 	{% for post in posts %}
 		{% if post.public %}

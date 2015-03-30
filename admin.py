@@ -168,7 +168,6 @@ class dashboard:
 			return render.admin({
 				'user': artist,
 				'posts': posts,
-				'count': len(posts),
 				'following': following,
 				'followers': followers
 			})

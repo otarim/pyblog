@@ -67,7 +67,7 @@
 			<h2><a href="/posts/{{post._id}}">{{post.title}}</a></h2>
 			{% endif%}
 			<p>
-				<img src="{{post.artist.avatar}}" alt="" width="30" height="30" class="art-avatar">
+				<img src="{{post.artist.avatar|avatarformat(60)}}" alt="" width="30" height="30" class="art-avatar">
 				<em><a href="/users/{{post.artist._id}}" class="art-artist">{{post.artist.nickname}}</a></em>发表于<span class="art-time">{{post.postDate|datetimeformat()}}</span>
 			</p>
 		</section>

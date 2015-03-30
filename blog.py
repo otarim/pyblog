@@ -46,6 +46,12 @@ render._lookup.globals.update(
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     return time.strftime(format,time.localtime(value))
 
+def avatarformat(value,size):
+    if value.find('?') == -1:
+    	return value + '?s=' + str(size)
+    else:
+    	return value + '&s=' + str(size)
+
 def markdownOutput(value):
 	return emojize(markdown(value))
 
@@ -61,6 +67,7 @@ def wrapTags(value,path='/tags/'):
 render._lookup.filters.update({
 	'datetimeformat': datetimeformat,
 	'markdownOutput': markdownOutput,
+	'avatarformat': avatarformat,
 	'wrapTags': wrapTags
 })
 
@@ -209,7 +216,6 @@ class showUser:
 			return render.user({
 				'user': artist,
 				'posts': posts,
-				'count': len(posts),
 				'isFollow': isFollow,
 				'me': me,
 				# 'following': following,
