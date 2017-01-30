@@ -10,5 +10,5 @@
 
 ![http://ww2.sinaimg.cn/large/9bfe0b14jw1epm4p57wvkj20fh0jf75k.jpg](http://ww2.sinaimg.cn/large/9bfe0b14jw1epm4p57wvkj20fh0jf75k.jpg)
 
-[http://otar.im/](http://otar.im/)
+[http://py.otar.im/](http://py.otar.im/)
 
