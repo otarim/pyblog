@@ -30,7 +30,7 @@
 			input[type=email],input[type=password],input[type=text],input[type=button],input[type=submit] {-webkit-appearance: none;}
 			.popbox-container_ {width: 80%;}
 			.pop {padding: 50px;}
-
+			.blog-footer {display: none;}
 		}
 	</style>
 	{% block header %}{% endblock %}
@@ -47,7 +47,7 @@
 	<script src="/static/js/socket.io.js"></script>
 	<script>
 		define('socket',function(exports){
-			var socket = io.connect('http://{{IP}}:10086')
+			var socket = io.connect(location.protocol + '//' +location.hostname + ':20086')
 			exports.socket = socket
 		})
 	</script>

@@ -4,5 +4,5 @@
     "mongodb": "^1.4.30",
     "socket.io": "^1.3.3"
   },
-  "hostname": "http://otar.im"
+  "hostname": "https://py.otar.im"
 }

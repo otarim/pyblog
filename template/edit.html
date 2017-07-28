@@ -81,11 +81,11 @@
 				{% endif %}
 			</div>
 			{% if post.music %}
-			<div class="write-music-inserted row" data-value="http://music.163.com/#/{{post.music.type}}?id={{post.music.id}}&autoplay={{post.music.autoplay}}">
-				<i class="music-del">X</i><span class="write-music-info">音乐路径：http://music.163.com/#/{{post.music.type}}?id={{post.music.id}} 自动播放：{% if post.music.autoplay %}是{% else %}否{%endif%}</span>
+			<div class="write-music-inserted row" data-value="{{post.music|escape}}">
+				<i class="music-del">X</i><span class="write-music-info">{{post.music|safe}}</span>
 			</div>
 			{% else %}
-			<div class="write-music-inserted row">
+			<div class="write-music-inserted row" style="display: none">
 				<i class="music-del">X</i><span class="write-music-info"></span>
 			</div>
 			{% endif %}
@@ -154,8 +154,11 @@
 	<template id="insertMusic">
 		<div class="pop insertMusic">
 			<h5>插入音乐...</h5>
-			<p><input type="text" class="insertMusic-value" placeholder="音乐地址"><input type="checkbox" id="insertMusic-autoplay">自动播放</p>
-			<p><a href="javascript:;" class="insertMusic-apply" data-event="setInsertMusic">插入</a></p>
+			<p>
+				<textarea class="insertMusic-value" placeholder="外链音乐HTML代码"></textarea>
+			<p>
+				<a href="javascript:;" class="insertMusic-apply" data-event="setInsertMusic">插入</a>
+			</p>
 		</div>
 	</template>
 	<input type="hidden" name="postId" value="{{post._id}}" id="postId">
@@ -305,10 +308,9 @@
 				},
 				events: {
 					'click#setInsertMusic': function(){
-						var autoplay = +$('#insertMusic-autoplay')[0].checked,
-							val = $('.insertMusic-value').val() + '&autoplay=' + autoplay
+						var val = $('.insertMusic-value').val()
 						$('.write-music-inserted').css({'display': 'block'}).data('value',val)
-						$('.write-music-info').text('音乐路径：' + $('.insertMusic-value').val() + ' 自动播放：' + ($('#insertMusic-autoplay')[0].checked ? '是' : '否'))
+						$('.write-music-info').html($('.insertMusic-value').val())
 						this.remove()
 					}
 				}

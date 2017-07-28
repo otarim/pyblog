@@ -1,0 +1,10 @@
+*.pyc
+node_modules/
+webSession/
+static/upload/
+lock
+lib/
+logs/
+log/
+.DS_Store
+.vscode

@@ -3,7 +3,8 @@
 import web
 import hashlib
 import cgi
-import Image
+#import Image
+from PIL import Image
 import os
 import os.path
 import random
@@ -41,12 +42,16 @@ def getArtistByKey(cursor,key):
 
 #检测登录
 def checkLogin():
-	user = web.cookies().get('pyname')
-	connect = web.cookies().get('pyconnect')
-	if user and connect:
-		return connect == sign(user)
+	if web.ctx.has_key('session'):
+		return web.ctx.session.hasLogin
 	else:
 		return False
+	# user = web.cookies().get('pyname')
+	# connect = web.cookies().get('pyconnect')
+	# if user and connect:
+	# 	return connect == sign(user)
+	# else:
+	# 	return False
 
 # 上传
 def upload(file,path='/',mediaType='pic'):
@@ -97,4 +102,31 @@ def get_my_ip():
 
 def isTrue(str):
 	return str.lower() == 'true'
+
+def addQuery(url, query):
+	qs = []
+	for i in query:
+		qs.append(i + '=' + str(query[i]))
+	qs = '&'.join(qs)
+	if url.find('?') == -1:
+		url += '?' + qs
+	else:
+		url += '&' + qs
+	return url
+
+def handlerSpecPostType(posts,userId):
+	for i in posts:
+		if i.get('private'):
+			if userId == i['artist']:
+				i['showPost'] = i['private'] = True
+			else:
+				i['showPost'] = False
+			continue
+		if i.get('assigns'):
+			if userId == i['artist'] or str(userId) in i.get('assigns'):
+				i['showPost'] = i['assign'] = True
+			else:
+				i['showPost'] = False
+		else:
+			i['showPost'] = True
 

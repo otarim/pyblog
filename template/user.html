@@ -2,7 +2,7 @@
 {% block title %}{{user.nickname}}的主页{% endblock %}
 {% block header %}
 <style>
-	.arts li {height: 26px;line-height: 26px;}
+	ol li {height: 26px;line-height: 26px;}
 	.user-info em {padding: 0 .2em;}
 	.rep h5 {margin-bottom: 10px;}
 	.rep-c {width: 100%;padding: 10px;height: 90px;margin-bottom: 10px;}
@@ -50,7 +50,7 @@
 {% block content %}
 <main>
 <header>
-	<h2>这货是...</h2>
+	<h2>ta是</h2>
 	<div class="user">
 		<p class="user-avatar-row"><img src="{{user.avatar|avatarformat(300)}}" alt="" class="user-avatar" width="150" height="150"></p>
 		{% if Login and not me %}
@@ -133,6 +133,25 @@
 {% endif %}
 <div class="like">
 	<h2>ta喜欢的</h2>
+	{% if favPosts|length %}
+	<ol>
+	{% for post in favPosts%}
+		{% if post.showPost %}
+		{% if post.assign %}
+		<li class="assign"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% elif post.private %}
+		<li class="private"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% elif post.public %}
+		<li class="public"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% else %}
+		<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% endif %}
+		{% endif %}
+	{% endfor %}
+	</ol>
+	{% else %}
+	<p>这里空空的什么都没有</p>
+	{% endif %}
 </div>
 {% endif %}
 	{% include 'block/footer.html' %}

@@ -89,12 +89,14 @@ class reg:
 				'loginIp': web.ctx.ip,
 				'lastLoginTime': time.time() 
 			})
+			# session.hasLogin = True
+			# session.username = data.username
 			writeSession({
 				'hasLogin': True,
 				'username': data.username
 			})
 			web.setcookie('pyname',data.username,72000,path='/')
-			web.setcookie('pyconnect',sign(data.username),72000,path='/')
+			# web.setcookie('pyconnect',sign(data.username),72000,path='/')
 			# 删除 token 表中的 document
 			db['regToken'].remove({'email': data['username']})
 			return web.redirect('/0') 
@@ -125,7 +127,7 @@ class login:
 						'username': data.username
 					})
 					web.setcookie('pyname',data.username,36000,path='/')
-					web.setcookie('pyconnect',sign(data.username),36000,path='/')
+					# web.setcookie('pyconnect',sign(data.username),36000,path='/')
 					return web.redirect('/0')
 				else:
 					return '密码错误'
@@ -135,19 +137,23 @@ class login:
 
 class logout:
 	def GET(self):
-		user = web.cookies().get('pyname')
-		if(user):
-			web.setcookie('pyname',user,-1,path='/')
-			web.setcookie('pyconnect',sign(user),-1,path='/')
-			return '你登出了'
-
+		if web.ctx.has_key('session'):
+			user = web.ctx.session.get('username')
+			if(user):
+				web.setcookie('pyname',user,-1,path='/')
+				writeSession({
+					'hasLogin': False,
+					'username': None
+				})
+				# web.setcookie('pyconnect',sign(user),-1,path='/')
+		raise web.redirect('/login') 
 
 # 主页
 class dashboard:
 	# 循环重定向，cookie 域的问题
 	def GET(self):
 		if checkLogin():
-			artist = db['users'].find_one({'username': web.cookies().get('pyname')})
+			artist = db['users'].find_one({'username': web.ctx.session.get('username')})
 			posts = list(db['posts'].find({'artist':artist['_id']}).sort('postDate',-1))
 			for i in posts:
 				if i.get('assigns'):
@@ -165,11 +171,32 @@ class dashboard:
 				followers = getArtistByKey(followers,'master')
 			else:
 				followers = None
+			# 我喜欢的文章
+			# 点赞的文章
+			pids = list(db['actions'].find({
+				'userId': str(artist['_id']),
+				'action': 1
+			}, {
+				'_id': -1,
+				'postId': 1
+			}).sort('actionTime', -1))
+			# 过滤assigns的文章
+			# 过滤
+			ids = []
+			for pid in pids:
+				ids.append(ObjectId(pid['postId']))
+			favPosts = list(db['posts'].find({
+				'_id': {
+					'$in': ids
+				}
+			}))
+			handlerSpecPostType(favPosts, artist['_id'])
 			return render.admin({
 				'user': artist,
 				'posts': posts,
 				'following': following,
-				'followers': followers
+				'followers': followers,
+				'favPosts': favPosts
 			})
 		else:
 			return web.redirect('/login')

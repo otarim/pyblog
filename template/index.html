@@ -10,6 +10,10 @@
 		background: url(/static/imgs/lock_black.svg) no-repeat 5px center;
 		padding-left: 30px;
 	}
+	.art h2 a {
+		display: flex;
+		align-items: center;
+	}
 	.art-private h2 a {color: #A9A9A9;}
 	.art-private h2 a::after {content: ''; width: 23px;height: 16px;background: url(/static/imgs/visibility.svg) no-repeat;display: inline-block;margin-left: 5px;}
 	.art-public h2 a::after {content: ''; width: 23px;height: 20px;background: url(/static/imgs/public.svg) no-repeat;display: inline-block;margin-left: 5px;}
@@ -36,13 +40,53 @@
 		.art-time {color: #999;font-size: 12px;}
 		.art-lock a {padding-left: 15px;}
 	}
+	h1 span, h1 a {
+		font-size: .35rem;
+		color: #000;
+	}
+	h1 a:hover {
+		text-decoration: none;
+	}
+	.act {font-size: .42rem;color: #3F51B5;}
+	.pages {
+			margin: 10px;
+			display: flex;
+			align-items: center;
+	}
+	.pages span {
+		color: #999;
+	}
+	.pages span:first-child,.pages a:first-child {
+		margin-right: 10px;
+	}
+	@media screen and (max-width:800px) {
+		main h1 span,main h1 a,main h1 .act {height: 50px;line-height: 50px;font-size: .22rem;font-family: 'Helvetica Neue',Arial,Helvetica,sans-serif;background: #2E3D8E;text-align: center;color: #fff;}
+		.act {font-weight: bold;}
+		.pages {
+			justify-content: space-between;
+		}
+	}
 
 	
 </style>
-{% endblock%}
+{% endblock %}
 {% block content %}
 <main>
-	<h1>最新创作</h1>
+	<h1>
+		{% if Login %}
+		{% if type == None %}
+		<span class="act">最新创作</span>
+		<span>/</span>
+		<a href="/?type=fav">时间线</a>
+		{% elif type == 'fav' %}
+		<a href="/">最新创作</a>
+		<span>/</span>
+		<span class="act">时间线</span>
+		{% endif %}
+		{% else %}
+		最新创作
+		{% endif %}
+	</h1>
 	<div class="arts">
 		{% for post in posts %}
 		{% if post.showPost %}
@@ -74,6 +118,20 @@
 		{% endif %}
 		{% endfor %}
 	</div>
+	{% if prevPage or nextPage%}
+	<div class="pages">
+		{% if prevPage %}
+		<a href="{{prevPage}}">< 上一页</a>
+		{% else %}
+		<span>没有上一页了</span>
+		{% endif %}
+		{% if nextPage %}
+		<a href="{{nextPage}}">下一页 ></a>
+		{% else %}
+		<span>没有下一页了</span>
+		{% endif %}
+	</div>
+	{% endif %}
 	{% include 'block/footer.html' %}
 </main>
 {% endblock %}
@@ -112,69 +170,4 @@
 	</section>
 </script>
 {% endraw %}
-{% if Login %}
-<script>
-	require(['core'],function(ota){
-		var $ = ota.get,scrollTimmer,
-			ajax = ota.ajax,
-			ajaxLock = false,
-			page = 1,pageNum = 8,maxPage
-		handler = 'touchend' in document ? 'touchend' : 'scroll'
-		$('main').on(handler,function(e){
-			var self = this
-			clearTimeout(scrollTimmer)
-			scrollTimmer = setTimeout(function(){
-				if($(self).height() + self.scrollTop >= self.scrollHeight && !ajaxLock){
-					ajaxLock = !ajaxLock
-					;++page
-					if(maxPage && page > maxPage){
-						return --page
-					}
-					ajax({
-						url: '/api/post',
-						data: {
-							'pageNum': pageNum,
-							'page': page
-						},
-						dataType: 'json',
-						success: function(data){
-							ajaxLock = !ajaxLock
-							maxPage = Math.ceil(data.total / data.pageNum)
-							return handlerData(data)
-						}
-					})
-				}
-			},500)
-		})
-		var fillZero = function(i){
-			if(i < 10){
-				return '0' + i
-			}
-			return i
-		}
-		var formatDate = function(d){
-			var t = new Date(d * 1e3)
-			var date = t.getFullYear() + '-' + fillZero(t.getMonth() + 1) + '-' + fillZero(t.getDate())
-			var time = ['getHours','getMinutes','getSeconds'].map(function(method){
-				return fillZero(t[method]())
-			}).join(':')
-			return date + ' ' + time
-		}
-		var handlerData = (function(){
-			var template = $('#template').html()
-  			Mustache.parse(template)
-			return function(data){
-				data = data.result
-				var ret = []
-				data.forEach(function(d){
-					d.postDate = formatDate(d.postDate)
-					ret.push(Mustache.render(template, {post: d}))
-				})
-				ret = ret.join('')
-				$('.arts').append(ret)
-			}
-		})()
-	})
-</script>
-{% endif %}
 {% endblock %}

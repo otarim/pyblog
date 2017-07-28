@@ -1,0 +1,27 @@
+{
+  "name": "pyblog",
+  "version": "1.0.0",
+  "homepage": "https://github.com/otarim/pyblog",
+  "authors": [
+    "otarim <otarim.com@gmail.com>"
+  ],
+  "description": "blog,clean,light,fast,build by python",
+  "main": "blog.py",
+  "keywords": [
+    "pyblog"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ota.js": "*",
+    "mustache.js": "~1.0.0",
+    "pen": "~0.1.0"
+  }
+}

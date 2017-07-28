@@ -1,15 +1,18 @@
-var http = require('http'),
+var https = require('https'),
+	fs = require('fs'),
 	IO = require('socket.io'),
 	async = require('async'),
 	client = require('mongodb').MongoClient,
 	ObjectID = require('mongodb').ObjectID
 
+var options = {
+	key: fs.readFileSync('<privkey.pem>'),
+	cert: fs.readFileSync('<fullchain.pem>')
+}
 
-var server = http.createServer(function(req,res){
+var server = https.createServer(options)
 
-})
-
-server.listen(10086)
+server.listen(20086)
 
 var io = IO(server),
 	room = 'pyblog'
@@ -20,7 +23,7 @@ var connect = (function(){
 		if(db){
 			return cb(null,db)
 		}else{
-			client.connect('mongodb://localhost:27017/pyblog',function(err,database){
+			client.connect('mongodb://pyblog:pyblog@127.0.0.1:27017/pyblog?authMechanism=SCRAM-SHA-1',function(err,database){
 				db = database
 				if(err){
 					return cb(err,null)

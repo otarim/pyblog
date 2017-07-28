@@ -9,6 +9,50 @@
 	section p {margin-bottom: 20px;}
 	.article-modify {text-align: center;color: #999;text-align: right;font-size: 14px;}
 	.post-edit {font-size: .22rem;}
+	.post-meta {
+		display: flex;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+	.post-meta a {
+		display: flex;
+		align-items: center;
+	}
+	.post-meta a:hover {
+		text-decoration: none;
+	}
+	[data-type="collect"] {
+		color: #50C87E;
+		border: 1px solid #50C87E;
+		height: 34px;
+		line-height: 34px;
+		padding: 0 20px;
+		text-align: center;
+		border-radius: 4px;
+		font-size: 14px;
+	}
+	[data-type="collect"]::before {
+		content: '';
+		background: url('/static/imgs/ic_thumb_up_b.svg') no-repeat;
+		background-size: contain;
+		width: 18px;
+		height: 18px;
+		display: block;
+		margin-right: 5px;
+	}
+	[data-collected="true"] {
+		background: #50C87E;
+		color: #fff;	
+	}
+	[data-collected="true"]::before {
+		content: '';
+		background: url('/static/imgs/ic_thumb_up.svg') no-repeat;
+		background-size: contain;
+		width: 18px;
+		height: 18px;
+		display: block;
+		margin-right: 5px;
+	}
 	@media screen and (max-width: 800px) {
 		article h1 {background: #518EAC;}
 		article header p {padding: 0 10px;font-size: 13px;margin-top: 10px;}
@@ -42,38 +86,73 @@
 				{% if post.lastModify %}
 				<p class="article-modify"><i>最后修改时间：{{post.lastModify|datetimeformat()}}</i></p>
 				{% endif %}
-				<aside class="article-music">
 				{%if post.music %}
-				{% if post.music.type == 2%}
-				<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="http://music.163.com/outchain/player?type={{post.music.type}}&id={{post.music.id}}&auto={{post.music.autoplay}}&height=66"></iframe>
-				{% else %}
-				<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=450 src="http://music.163.com/outchain/player?type={{post.music.type}}&id={{post.music.id}}&auto={{post.music.autoplay}}&height=430"></iframe>
-				{% endif %}
-				{% endif %}
+				<aside class="article-music">
+				{{post.music|safe}}
 				</aside>
+				{% endif %}
 			</section>
 		</article>
-		<!-- 多说评论框 start -->
-		<aside class="ds-thread" data-thread-key="{{post._id}}" data-title="{{post.title}}" data-url="{{HOSTNAME}}/posts/{{post._id}}"></aside>
-		<!-- 多说评论框 end -->
-		<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-		<script type="text/javascript">
-		var duoshuoQuery = {short_name:"otarim"};
+		<aside>
+			<div class="post-meta">
+				<a href="javascript:;" data-collected="{{post.collected}}" data-type="collect">
+					{{post.collect}}
+				</a>
+			</div>
+		</aside>
+		<aside id="disqus_thread"></aside>
+		<script>
 			(function() {
-				var ds = document.createElement('script');
-				ds.type = 'text/javascript';ds.async = true;
-				ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-				ds.charset = 'UTF-8';
-				(document.getElementsByTagName('head')[0] 
-				 || document.getElementsByTagName('body')[0]).appendChild(ds);
+			var d = document, s = d.createElement('script');
+			s.src = 'https://tpyblog.disqus.com/embed.js';
+			s.setAttribute('data-timestamp', +new Date());
+			(d.head || d.body).appendChild(s);
 			})();
-		</script>
-		<!-- 多说公共JS代码 end -->
+		</script>                            
 		{% include 'block/footer.html' %}
 	</main>
 {% endblock %}
 {% block footer %}
 <script>
-	require(['mainPage'])
+	{% if Login %}
+	require(['mainPage', 'core'], function(mainPage, ota) {
+		var $ = ota.get,
+			el = $('[data-type="collect"]'),
+			lock
+		el.on('click', function(e) {
+			if (lock) return false
+			lock = true
+			var collected = $(this).data('collected'),
+				status,
+				self = this
+			if (collected === 'true') {
+				status = -1
+			} else {
+				status = 1
+			}
+			ota.ajax({
+				url: '/api/action',
+				type: 'post',
+				data: {
+					pid: '{{post._id}}',
+					action: status
+				},
+				success: function() {
+					lock = false
+					if (status > 0) {
+						el.text(Number(el.text()) + 1)
+					} else {
+						el.text(Number(el.text()) - 1)
+					}
+					$(self).data('collected', status > 0 ? 'true' : 'false')
+				},
+				error: function() {
+					lock = false
+				}
+			})
+			return false
+		})
+	})
+	{% endif %}
 </script>
 {% endblock %}

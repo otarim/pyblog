@@ -1,0 +1,9 @@
+pip install -r requirements.txt
+
+npm install
+
+mkdir logs
+
+mkdir webSession
+
+pm2 restart pm2.json

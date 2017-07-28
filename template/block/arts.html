@@ -45,6 +45,28 @@
 	<p>你还没发文章，要来一发么?</p>
 	{% endif %}
 </div>
+<div class="arts">
+	<h2>我喜好的文章</h2>
+	{% if favPosts|length %}
+	<ol>
+	{% for post in favPosts%}
+		{% if post.showPost %}
+		{% if post.assign %}
+		<li class="assign"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% elif post.private %}
+		<li class="private"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% elif post.public %}
+		<li class="public"><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% else %}
+		<li><a href="/posts/{{post._id}}">{{post.title}}</a></li>
+		{% endif %}
+		{% endif %}
+	{% endfor %}
+	</ol>
+	{% else %}
+	<p>这里空空的什么都没有</p>
+	{% endif %}
+</div>
 {% include 'block/pop/del.html' %}
 <script>
 	define('arts',['core','Popbox'],function(ota,Popbox,exports){
